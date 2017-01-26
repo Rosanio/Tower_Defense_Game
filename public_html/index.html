@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Matt's Game</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body onload="
+        var myGame = new MyGame('GLCanvas');
+        gEngine.Core.initializeEngineCore('GLCanvas', myGame);
+    ">
+        <canvas id="GLCanvas" width="640" height="480"></canvas>
+        <!--Libraries-->
+        <script src="src/lib/gl-matrix.js" type="text/javascript"></script>
+        
+        <!--Models-->
+        <script src="src/Engine/Scene.js" type="text/javascript"></script>
+        <script src="src/Engine/Transform.js" type="text/javascript"></script>
+        <script src="src/Engine/Camera.js" type="text/javascript"></script>
+        <script src="src/Engine/BoundingBox.js" type="text/javascript"></script>
+        
+        <!--Core Files-->
+        <script src="src/Engine/Core/Engine_Core.js" type="text/javascript"></script>
+        <script src="src/Engine/Core/Engine_VertexBuffer.js" type="text/javascript"></script>
+        <script src="src/Engine/Core/Engine_GameLoop.js" type="text/javascript"></script>
+        <script src="src/Engine/Core/Engine_Input.js" type="text/javascript"></script>
+        <script src="src/Engine/Core/Engine_Textures.js" type="text/javascript"></script>
+        
+        <!--Shader Files-->
+        <script src="src/Engine/Shaders/SimpleShader.js" type="text/javascript"></script>
+        <script src="src/Engine/Shaders/TextureShader.js" type="text/javascript"></script>
+        <script src="src/Engine/Shaders/SpriteShader.js" type="text/javascript"></script>
+        
+        <!--Renderable Files-->
+        <script src="src/Engine/Renderables/Renderable.js" type="text/javascript"></script>
+        <script src="src/Engine/Renderables/TextureRenderable.js" type="text/javascript"></script>
+        <script src="src/Engine/Renderables/SpriteRenderable.js" type="text/javascript"></script>
+        <script src="src/Engine/Renderables/SpriteAnimateRenderable.js" type="text/javascript"></script>
+        <script src="src/Engine/Renderables/FontRenderable.js" type="text/javascript"></script>
+        
+        <!--Game Object Files-->
+        <script src="src/Engine/GameObjects/GameObject.js" type="text/javascript"></script>
+        <script src="src/Engine/GameObjects/GameObjectSet.js" type="text/javascript"></script>
+        
+        <!--Core Resource Files-->
+        <script src="src/Engine/Core/Resources/Engine_ResourceMap.js" type="text/javascript"></script>
+        <script src="src/Engine/Core/Resources/Engine_TextFileLoader.js" type="text/javascript"></script>
+        <script src="src/Engine/Core/Resources/Engine_DefaultResources.js" type="text/javascript"></script>
+        <script src="src/Engine/Core/Resources/Engine_AudioClips.js" type="text/javascript"></script>
+        <script src="src/Engine/Core/Resources/Engine_Fonts.js" type="text/javascript"></script>
+        
+        <!--Game Utilities-->
+        <script src='src/MyGame/Util/SceneFileParser.js' type="text/javascript"></script>
+        
+        <!--Game Objects-->
+        <script src="src/MyGame/Objects/DyePack.js" type="text/javascript"></script>
+        <script src="src/MyGame/Objects/Hero.js" type="text/javascript"></script>
+        <script src="src/MyGame/Objects/Minion.js" type="text/javascript"></script>
+        <script src="src/MyGame/Objects/Brain.js" type="text/javascript"></script>
+        
+        <!--Game Files-->
+        <script src="src/MyGame/MyGame.js" type="text/javascript"></script>
+        <script src="src/MyGame/BlueLevel.js" type="text/javascript"></script>
+        <script src="src/MyGame/GameOver.js" type="text/javascript"></script>
+    </body>
+</html>
