@@ -7,6 +7,8 @@
 function MyGame() {
     
     this.kMinionSprite = "assets/minion_sprite.png";
+    this.kMinionPortal = "assets/minion_portal.png";
+    
     //The camera to view the scene
     this.mCamera = null;
     
@@ -15,20 +17,27 @@ function MyGame() {
     
     //The hero and support objects
     this.mHero = null;
-    this.mMinionSet = null;
-    this.mDyePack = null;
     this.mBrain = null;
+    this.mPortalHit = null;
+    this.mHeroHit = null;
     
-    this.mMode = 'H';
+    this.mPortal = null;
+    this.mLMinion = null;
+    this.mRMinion = null;
+    
+    this.mCollide = null;
+    this.mChoice = 'H';
 };
 gEngine.Core.inheritPrototype(MyGame, Scene);
 
 MyGame.prototype.loadScene = function() {
     gEngine.Textures.loadTexture(this.kMinionSprite);
+    gEngine.Textures.loadTexture(this.kMinionPortal);
 };
 
 MyGame.prototype.unloadScene = function() {
     gEngine.Textures.unloadTexture(this.kMinionSprite);
+    gEngine.Textures.unloadTexture(this.kMinionPortal);
 };
 
 MyGame.prototype.initialize = function() {
@@ -36,70 +45,77 @@ MyGame.prototype.initialize = function() {
     this.mCamera = new Camera(vec2.fromValues(50, 37.5), 100, [0, 0, 640, 480]);
     this.mCamera.setBackgroundColor([0.8, 0.8, 0.8, 1]);
     
-    //The dye pack, simple another GameObject
-    this.mDyePack = new DyePack(this.kMinionSprite);
+    this.mBrain = new Brain(this.kMinionSprite);
     
-    //A set of Minions
-    this.mMinionSet = new GameObjectSet();
-    var i, randomY, aMinion;
-    //create 5 minions at random Y values
-    for(i = 0; i < 5; i++) {
-        randomY = Math.random() * 65;
-        aMinion = new Minion(this.kMinionSprite, randomY);
-        this.mMinionSet.addToSet(aMinion);
-    }
-    
-    //Create the hero object
     this.mHero = new Hero(this.kMinionSprite);
     
-    //Create the brain object
-    this.mBrain = new Brain(this.kMinionSprite);
+    this.mPortalHit = new DyePack(this.kMinionSprite);
+    this.mPortalHit.setVisibility(false);
+    this.mHeroHit = new DyePack(this.kMinionSprite);
+    this.mHeroHit.setVisibility(false);
+    
+    this.mPortal = new TextureObject(this.kMinionPortal, 50, 30, 10, 10);
+    
+    this.mLMinion = new Minion(this.kMinionSprite, 30, 30);
+    this.mRMinion = new Minion(this.kMinionSprite, 70, 30);
     
     //Create and initialize message output
     this.mMsg = new FontRenderable("Status Message");
     this.mMsg.setColor([0, 0, 0, 1]);
     this.mMsg.getXform().setPosition(1, 2);
     this.mMsg.setTextHeight(3);
+    
+    this.mCollide = this.mHero;
 };
 
 //The update function, updates the application state. Make sure to NOT draw anything in this function!
 MyGame.prototype.update = function() {
-    var msg = "brain modes [H:keys, J:immediate, K:gradual]: ";
-    var rate = 1;
+    var msg = "L/R: Left or Right Minion; H: Dye; B: Brain]:";
+    
+    this.mLMinion.update();
+    this.mRMinion.update();
     
     this.mHero.update();
-    this.mMinionSet.update();
-    //this.mDyePack.update();
     
-    var hBbox = this.mHero.getBbox();
-    var bBbox = this.mBrain.getBbox();
+    this.mPortal.update(gEngine.Input.keys.Up, gEngine.Input.keys.Down, gEngine.Input.keys.Left, gEngine.Input.keys.Right, gEngine.Input.keys.P);
     
-    switch(this.mMode) {
-        case 'H':
-            this.mBrain.update(); //player steers with arrow keys
-            break;
-        case 'K':
-            rate = 0.02; //gradual rate
-            //When 'K' is typed, the following should also be executed
-        case 'J':
-            if(!hBbox.intersectsBound(bBbox)) {
-                this.mBrain.rotateObjPointTo(this.mHero.getXform().getPosition(), rate);
-                GameObject.prototype.update.call(this.mBrain);
-            }
-            break;
+    var h = [];
+    
+    if(this.mPortal.pixelTouches(this.mCollide, h)) {
+        this.mPortalHit.setVisibility(true);
+        this.mPortalHit.getXform().setXPos(h[0]);
+        this.mPortalHit.getXform().setYPos(h[1]);
+    } else {
+        this.mPortalHit.setVisibility(false);
     }
     
-    //check for the hero going outside 80% of the WC window bound
-    var status = this.mCamera.collideWCBound(this.mHero.getXform(), 0.8);            
+    if(!this.mHero.pixelTouches(this.mBrain, h)) {
+        this.mBrain.rotateObjPointTo(this.mHero.getXform().getPosition(), 0.05);
+        GameObject.prototype.update.call(this.mBrain);
+        this.mHeroHit.setVisibility(false);
+    } else {
+        this.mHeroHit.setVisibility(true);
+        this.mHeroHit.getXform().setPosition(h[0], h[1]);
+    }
     
-    if(gEngine.Input.isKeyClicked(gEngine.Input.keys.H))
-        this.mMode = 'H';
-    if(gEngine.Input.isKeyClicked(gEngine.Input.keys.J)) 
-        this.mMode = 'J';
-    if(gEngine.Input.isKeyClicked(gEngine.Input.keys.K))
-        this.mMode = 'K';
+    if(gEngine.Input.isKeyClicked(gEngine.Input.keys.L)) {
+        this.mCollide = this.mLMinion;
+        this.mChoice = 'L';
+    }
+    if(gEngine.Input.isKeyClicked(gEngine.Input.keys.R)) {
+        this.mCollide = this.mRMinion;
+        this.mChoice = 'R';
+    }
+    if(gEngine.Input.isKeyClicked(gEngine.Input.keys.B)) {
+        this.mCollide = this.mBrain;
+        this.mChoice = 'B';
+    }
+    if(gEngine.Input.isKeyClicked(gEngine.Input.keys.H)) {
+        this.mCollide = this.mHero;
+        this.mChoice = 'H';
+    }
     
-    this.mMsg.setText(msg + this.mMode + " [Hero bound=" + status + "]");
+    this.mMsg.setText(msg + this.mChoice);
 };
 
 //This is the draw function, make sure to setup proper drawing environment, and more importantly, make sure to NOT change any state
@@ -110,8 +126,11 @@ MyGame.prototype.draw = function() {
     this.mCamera.setupViewProjection();
     //Draw all squares
     this.mHero.draw(this.mCamera);
-    this.mMinionSet.draw(this.mCamera);
-    this.mDyePack.draw(this.mCamera);
     this.mBrain.draw(this.mCamera);
+    this.mPortal.draw(this.mCamera);
+    this.mLMinion.draw(this.mCamera);
+    this.mRMinion.draw(this.mCamera);
+    this.mPortalHit.draw(this.mCamera);
+    this.mHeroHit.draw(this.mCamera);
     this.mMsg.draw(this.mCamera);
 };

@@ -9,6 +9,7 @@ function TextureInfo(name, w, h, id) {
     this.mWidth = w;
     this.mHeight = h;
     this.mGLTexID = id;
+    this.mColorArray = null;
 };
 
 var gEngine = gEngine || {};
@@ -94,12 +95,34 @@ gEngine.Textures = (function() {
         return gEngine.ResourceMap.retrieveAsset(textureName);
     };
     
+    var getColorArray = function(textureName) {
+        var texInfo = getTextureInfo(textureName);
+        if(texInfo.mColorArray === null) {
+            //create a frame buffer and bind it to the texture, and read the color content
+            var gl = gEngine.Core.getGL();
+            var fb = gl.createFramebuffer();
+            gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texInfo.mGLTexID, 0);
+            if(gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE) {
+                var pixels = new Uint8Array(texInfo.mWidth * texInfo.mHeight * 4);
+                gl.readPixels(0, 0, texInfo.mWidth, texInfo.mHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+                texInfo.mColorArray = pixels;
+            } else {
+                alert("Warning: Engine.Texture.GetColorArray() failed!");
+            }
+            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+            gl.deleteFramebuffer(fb);
+        }
+        return texInfo.mColorArray;
+    };
+    
     var mPublic = {
         loadTexture: loadTexture,
         unloadTexture: unloadTexture,
         activateTexture: activateTexture,
         deactivateTexture: deactivateTexture,
-        getTextureInfo: getTextureInfo
+        getTextureInfo: getTextureInfo,
+        getColorArray: getColorArray
     };
     return mPublic;
 }());
