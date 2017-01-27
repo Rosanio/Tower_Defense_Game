@@ -8,9 +8,11 @@ function MyGame() {
     
     this.kMinionSprite = "assets/minion_sprite.png";
     this.kMinionPortal = "assets/minion_portal.png";
+    this.kBg = "assets/bg.png";
     
     //The camera to view the scene
     this.mCamera = null;
+    this.mBg = null;
     
     //For echo message
     this.mMsg = null;
@@ -18,26 +20,25 @@ function MyGame() {
     //The hero and support objects
     this.mHero = null;
     this.mBrain = null;
-    this.mPortalHit = null;
-    this.mHeroHit = null;
-    
     this.mPortal = null;
     this.mLMinion = null;
     this.mRMinion = null;
+    this.mFocusObj = null;
     
-    this.mCollide = null;
-    this.mChoice = 'H';
+    this.mChoice = 'D';
 };
 gEngine.Core.inheritPrototype(MyGame, Scene);
 
 MyGame.prototype.loadScene = function() {
     gEngine.Textures.loadTexture(this.kMinionSprite);
     gEngine.Textures.loadTexture(this.kMinionPortal);
+    gEngine.Textures.loadTexture(this.kBg);
 };
 
 MyGame.prototype.unloadScene = function() {
     gEngine.Textures.unloadTexture(this.kMinionSprite);
     gEngine.Textures.unloadTexture(this.kMinionPortal);
+    gEngine.Textures.unloadTexture(this.kBg);
 };
 
 MyGame.prototype.initialize = function() {
@@ -45,24 +46,27 @@ MyGame.prototype.initialize = function() {
     this.mCamera = new Camera(vec2.fromValues(50, 37.5), 100, [0, 0, 640, 480]);
     this.mCamera.setBackgroundColor([0.8, 0.8, 0.8, 1]);
     
+    var bgR = new SpriteRenderable(this.kBg);
+    bgR.setElementPixelPositions(0, 1024, 0, 1024);
+    bgR.getXform().setSize(150, 150);
+    bgR.getXform().setPosition(50, 35);
+    this.mBg = new GameObject(bgR);
+    
     this.mBrain = new Brain(this.kMinionSprite);
     
     this.mHero = new Hero(this.kMinionSprite);
-    
-    this.mPortalHit = new DyePack(this.kMinionSprite);
-    this.mPortalHit.setVisibility(false);
-    this.mHeroHit = new DyePack(this.kMinionSprite);
-    this.mHeroHit.setVisibility(false);
     
     this.mPortal = new TextureObject(this.kMinionPortal, 50, 30, 10, 10);
     
     this.mLMinion = new Minion(this.kMinionSprite, 30, 30);
     this.mRMinion = new Minion(this.kMinionSprite, 70, 30);
     
+    this.mFocusObj = this.mHero;
+    
     //Create and initialize message output
     this.mMsg = new FontRenderable("Status Message");
-    this.mMsg.setColor([0, 0, 0, 1]);
-    this.mMsg.getXform().setPosition(1, 2);
+    this.mMsg.setColor([1, 1, 1, 1]);
+    this.mMsg.getXform().setPosition(2, 4);
     this.mMsg.setTextHeight(3);
     
     this.mCollide = this.mHero;
@@ -70,7 +74,8 @@ MyGame.prototype.initialize = function() {
 
 //The update function, updates the application state. Make sure to NOT draw anything in this function!
 MyGame.prototype.update = function() {
-    var msg = "L/R: Left or Right Minion; H: Dye; B: Brain]:";
+    var zoomDelta = 0.05;
+    var msg = "L/R: Left or Right Minion; H: Dye; P: Portal]:";
     
     this.mLMinion.update();
     this.mRMinion.update();
@@ -81,26 +86,13 @@ MyGame.prototype.update = function() {
     
     var h = [];
     
-    if(this.mPortal.pixelTouches(this.mCollide, h)) {
-        this.mPortalHit.setVisibility(true);
-        this.mPortalHit.getXform().setXPos(h[0]);
-        this.mPortalHit.getXform().setYPos(h[1]);
-    } else {
-        this.mPortalHit.setVisibility(false);
-    }
-    
     if(!this.mHero.pixelTouches(this.mBrain, h)) {
-        this.mBrain.rotateObjPointTo(this.mHero.getXform().getPosition(), 0.05);
+        this.mBrain.rotateObjPointTo(this.mHero.getXform().getPosition(), 0.01);
         GameObject.prototype.update.call(this.mBrain);
-        this.mHeroHit.setVisibility(false);
-    } else {
-        this.mHeroHit.setVisibility(true);
-        this.mHeroHit.getXform().setPosition(h[0], h[1]);
     }
     
     if(gEngine.Input.isKeyClicked(gEngine.Input.keys.L)) {
-        this.mCollide = this.mLMinion;
-        this.mChoice = 'L';
+        //TODO: Start here
     }
     if(gEngine.Input.isKeyClicked(gEngine.Input.keys.R)) {
         this.mCollide = this.mRMinion;
