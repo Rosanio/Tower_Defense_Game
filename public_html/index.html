@@ -14,14 +14,13 @@ and open the template in the editor.
         var myGame = new MyGame('GLCanvas');
         gEngine.Core.initializeEngineCore('GLCanvas', myGame);
     ">
-        <canvas id="GLCanvas" width="640" height="480"></canvas>
+        <canvas id="GLCanvas" width="1280" height="720"></canvas>
         <!--Libraries-->
         <script src="src/lib/gl-matrix.js" type="text/javascript"></script>
         
         <!--Models-->
         <script src="src/Engine/Scene.js" type="text/javascript"></script>
-        <script src="src/Engine/Transform.js" type="text/javascript"></script>
-        <script src="src/Engine/BoundingBox.js" type="text/javascript"></script>
+        <script src="src/Engine/Material.js" type="text/javascript"></script>
         
         <!--Core Files-->
         <script src="src/Engine/Core/Engine_Core.js" type="text/javascript"></script>
@@ -29,20 +28,30 @@ and open the template in the editor.
         <script src="src/Engine/Core/Engine_GameLoop.js" type="text/javascript"></script>
         <script src="src/Engine/Core/Engine_Input.js" type="text/javascript"></script>
         <script src="src/Engine/Core/Engine_Textures.js" type="text/javascript"></script>
+        <script src="src/Engine/Core/Engine_Physics.js" type="text/javascript"></script>
         
         <!--Shader Files-->
         <script src="src/Engine/Shaders/SimpleShader.js" type="text/javascript"></script>
         <script src="src/Engine/Shaders/TextureShader.js" type="text/javascript"></script>
         <script src="src/Engine/Shaders/SpriteShader.js" type="text/javascript"></script>
+        <script src="src/Engine/Shaders/LineShader.js" type="text/javascript"></script>
+        <script src="src/Engine/Shaders/LightShader.js" type="text/javascript"></script>
+        <script src="src/Engine/Shaders/ShaderLightAtIndex.js" type="text/javascript"></script>
+        <script src="src/Engine/Shaders/IllumShader.js" type="text/javascript"></script>
+        <script src="src/Engine/Shaders/ShaderMaterial.js" type="text/javascript"></script>
+        <script src="src/Engine/Shaders/ShadowCasterShader.js" type="text/javascript"></script>
         
         <!--Renderable Files-->
         <script src="src/Engine/Renderables/Renderable.js" type="text/javascript"></script>
         <script src="src/Engine/Renderables/TextureRenderable.js" type="text/javascript"></script>
         <script src="src/Engine/Renderables/SpriteRenderable.js" type="text/javascript"></script>
         <script src="src/Engine/Renderables/SpriteAnimateRenderable.js" type="text/javascript"></script>
+        <script src="src/Engine/Renderables/LineRenderable.js" type="text/javascript"></script>
         <script src="src/Engine/Renderables/FontRenderable.js" type="text/javascript"></script>
         <script src="src/Engine/Renderables/TextureRenderable_PixelCollision.js" type="text/javascript"></script>
         <script src="src/Engine/Renderables/SpriteRenderable_PixelCollision.js" type="text/javascript"></script>
+        <script src="src/Engine/Renderables/LightRenderable.js" type="text/javascript"></script>
+        <script src="src/Engine/Renderables/IllumRenderable.js" type="text/javascript"></script>
         
         <!--Game Object Files-->
         <script src="src/Engine/GameObjects/GameObject.js" type="text/javascript"></script>
@@ -59,20 +68,51 @@ and open the template in the editor.
         <!--Camera Files-->
         <script src="src/Engine/Camera/Camera.js" type="text/javascript"></script>
         <script src="src/Engine/Camera/Camera_Manipulation.js" type="text/javascript"></script>
+        <script src="src/Engine/Camera/CameraState.js" type="text/javascript"></script>
+        <script src="src/Engine/Camera/CameraShake.js" type="text/javascript"></script>
+        <script src="src/Engine/Camera/Camera_Input.js" type="text/javascript"></script>
+        <script src="src/Engine/Camera/Camera_Xform.js" type="text/javascript"></script>
+        
+        <!--Light Files-->
+        <script src="src/Engine/Lights/Lights.js" type="text/javascript"></script>
+        <script src="src/Engine/Lights/LightSet.js" type="text/javascript"></script>
+        
+        <!--Shadow Files-->
+        <script src="src/Engine/Shadows/ShadowCaster.js" type="text/javascript"></script>
+        <script src="src/Engine/Shadows/ShadowReceiver.js" type="text/javascript"></script>
+        <script src="src/Engine/Shadows/ShadowReceiver_Stencil.js" type="text/javascript"></script>
+        
+        <!--Physics Files-->
+        <script src="src/Engine/Physics/RigidShape.js" type="text/javascript"></script>
+        <script src="src/Engine/Physics/RigidRectangle.js" type="text/javascript"></script>
+        <script src="src/Engine/Physics/RigidCircle.js" type="text/javascript"></script>
+        <script src="src/Engine/Physics/RigidShape_Collision.js" type="text/javascript"></script>
+        <script src="src/Engine/Physics/RigidRectangle_Collision.js" type="text/javascript"></script>
+        <script src="src/Engine/Physics/RigidCircle_Collision.js" type="text/javascript"></script>
+        <script src="src/Engine/Physics/RigidShapeBehavior.js" type="text/javascript"></script>
+        
+        <!--Engine Utilities-->
+        <script src="src/Engine/Utils/Transform.js" type="text/javascript"></script>
+        <script src="src/Engine/Utils/BoundingBox.js" type="text/javascript"></script>
+        <script src="src/Engine/Utils/Interpolate.js" type="text/javascript"></script>
+        <script src="src/Engine/Utils/InterpolateVec2.js" type="text/javascript"></script>
+        <script src="src/Engine/Utils/ShakePosition.js" type="text/javascript"></script>
+        <script src="src/Engine/Utils/CollisionInfo.js" type="text/javascript"></script>
+        
+        <script src='src/MyGame/Constants.js' type="text/javascript"></script>
         
         <!--Game Utilities-->
         <script src='src/MyGame/Util/SceneFileParser.js' type="text/javascript"></script>
+        <script src='src/MyGame/Util/BoardFileParser.js' type="text/javascript"></script>
         
         <!--Game Objects-->
-        <script src="src/MyGame/Objects/DyePack.js" type="text/javascript"></script>
-        <script src="src/MyGame/Objects/Hero.js" type="text/javascript"></script>
-        <script src="src/MyGame/Objects/Minion.js" type="text/javascript"></script>
-        <script src="src/MyGame/Objects/Brain.js" type="text/javascript"></script>
-        <script src="src/MyGame/Objects/TextureObject.js" type="text/javascript"></script>
+        <script src="src/MyGame/Objects/Board.js" type="text/javascript"></script>
+        <script src="src/MyGame/Objects/Tile.js" type="text/javascript"></script>
+        <script src="src/MyGame/Objects/GrassTile.js" type="text/javascript"></script>
+        <script src="src/MyGame/Objects/PathTile.js" type="text/javascript"></script>
         
         <!--Game Files-->
         <script src="src/MyGame/MyGame.js" type="text/javascript"></script>
-        <script src="src/MyGame/BlueLevel.js" type="text/javascript"></script>
         <script src="src/MyGame/GameOver.js" type="text/javascript"></script>
     </body>
 </html>

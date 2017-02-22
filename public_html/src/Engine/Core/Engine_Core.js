@@ -21,7 +21,7 @@ gEngine.Core = (function() {
         
         //Get standard webGL or experimental
         //Binds webGL to the Canvas area on the web-page to the variable mGL
-        mGL = canvas.getContext("webgl", {alpha: false}) || canvas.getContext("experimental-webgl", {alpha: false});
+        mGL = canvas.getContext("webgl", {alpha: false, depth: true, stencil: true}) || canvas.getContext("experimental-webgl", {alpha: false, depth: true, stencil: true});
         
         //Allows transparency with textures
         mGL.blendFunc(mGL.SRC_ALPHA, mGL.ONE_MINUS_SRC_ALPHA);
@@ -29,6 +29,10 @@ gEngine.Core = (function() {
         
         //Set images to flip the y axis to match the texture coordinate space
         mGL.pixelStorei(mGL.UNPACK_FLIP_Y_WEBGL, true);
+        
+        //make sure depth testing is enabled
+        mGL.enable(mGL.DEPTH_TEST);
+        mGL.depthFunc(mGL.LEQUAL);
         
         if(mGL === null) {
             document.write("<br><b>WebGL is not supported!</b>");
@@ -40,10 +44,12 @@ gEngine.Core = (function() {
         initializeWebGL(htmlCanvasID);
         //now initialize vertex buffer
         gEngine.VertexBuffer.initialize();
-        gEngine.Input.initialize();
+        gEngine.Input.initialize(htmlCanvasID);
         gEngine.AudioClips.initAudioContext();
         //Inits DefaultResources, when done, invoke startScene(myGame).
         gEngine.DefaultResources.initialize(function() {startScene(myGame);});
+        
+        gEngine.Physics.initialize();
     };
     
     var startScene = function(myGame) {
@@ -53,7 +59,7 @@ gEngine.Core = (function() {
     
     var clearCanvas = function(color) {
         mGL.clearColor(color[0], color[1], color[2], color[3]); //set color to be cleared
-        mGL.clear(mGL.COLOR_BUFFER_BIT);
+        mGL.clear(mGL.COLOR_BUFFER_BIT | mGL.STENCIL_BUFFER_BIT | mGL.DEPTH_BUFFER_BIT);
     };
     
     var inheritPrototype = function(subClass, superClass) {

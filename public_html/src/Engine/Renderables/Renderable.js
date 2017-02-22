@@ -30,3 +30,9 @@ Renderable.prototype.getColor = function() {
 Renderable.prototype.getXform = function() {
     return this.mXform;
 };
+
+Renderable.prototype.swapShader = function(s) {
+    var out = this.mShader;
+    this.mShader = s;
+    return out;
+};

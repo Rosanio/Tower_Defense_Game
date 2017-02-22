@@ -7,6 +7,7 @@
 function Transform() {
     this.mPosition = vec2.fromValues(0,0);  //translation operator
     this.mScale = vec2.fromValues(1,1);     //scaling operator
+    this.mZ = 0.0;                          //must be a positive number, larger is closer to eye
     this.mRotationInRad = 0.0;              //rotation in radians
 }
 
@@ -17,6 +18,9 @@ Transform.prototype.setPosition = function(xPos, yPos) {
 };
 Transform.prototype.getPosition = function() {
     return this.mPosition;
+};
+Transform.prototype.get3DPosition = function() {
+    return vec3.fromValues(this.getXPos(), this.getYPos(), this.getZPos());
 };
 Transform.prototype.getXPos = function() {
     return this.mPosition[0];
@@ -35,7 +39,16 @@ Transform.prototype.setYPos = function(yPos) {
 };
 Transform.prototype.incYPosBy = function(delta) {
     this.mPosition[1] += delta;
-} ;
+};
+Transform.prototype.setZPos = function(zPos) {
+    this.mZ = zPos;
+};
+Transform.prototype.getZPos = function() {
+    return this.mZ;
+};
+Transform.prototype.incZPosBy = function(delta) {
+    this.mZ += delta;
+};
 
 //Size getters and setters
 Transform.prototype.setSize = function(width, height) {
@@ -95,11 +108,18 @@ Transform.prototype.getXform = function() {
     var matrix = mat4.create();
     
     //Compute translation, for now z is always at 0.0
-    mat4.translate(matrix, matrix, vec3.fromValues(this.getXPos(), this.getYPos(), 0.0));
+    mat4.translate(matrix, matrix, this.get3DPosition());
     //Concatenate with rotation
     mat4.rotateZ(matrix, matrix, this.getRotationInRad());
     //Contatenate with scaling
     mat4.scale(matrix, matrix, vec3.fromValues(this.getWidth(), this.getHeight(), 1.0));
     return matrix;
+};
+
+Transform.prototype.cloneTo = function(aXform) {
+    aXform.mPosition = vec2.clone(this.mPosition);
+    aXform.mScale = vec2.clone(this.mScale);
+    aXform.mZ = this.mZ;
+    aXform.mRotationInRad = this.mRotationInRad;
 };
 

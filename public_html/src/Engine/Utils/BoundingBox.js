@@ -45,7 +45,7 @@ BoundingBox.prototype.boundCollideStatus = function(otherBound) {
             status |= BoundingBox.eboundCollideStatus.eCollideRight;
         if(otherBound.minY() < this.minY())
             status |= BoundingBox.eboundCollideStatus.eCollideBottom;
-        if(otherBound.maxY() < this.maxY())
+        if(otherBound.maxY() > this.maxY())
             status |= BoundingBox.eboundCollideStatus.eCollideTop;
         //if the bounds intersects and yet none of the sides overlaps
         //otherBound is completely inside thisBound

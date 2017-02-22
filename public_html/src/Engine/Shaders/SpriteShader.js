@@ -30,6 +30,12 @@ SpriteShader.prototype.setTextureCoordinate = function(texCoord) {
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(texCoord));
 };
 
+//will be overridden by LightShader
+SpriteShader.prototype.setLights = function(l) {};
+
+//will be overridden by IllumShader
+SpriteShader.prototype.setMaterialAndCameraPos = function(m, p) {};
+
 SpriteShader.prototype.activateShader = function(pixelColor, aCamera) {
     //first call the super class's activate
     SimpleShader.prototype.activateShader.call(this, pixelColor, aCamera);

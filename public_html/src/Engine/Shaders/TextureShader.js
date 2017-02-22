@@ -10,9 +10,11 @@ function TextureShader(vertexShaderPath, fragmentShaderPath) {
     
     //Reference to aTextureCoordinate within the shader
     this.mShaderTextureCoordAttribute = null;
+    this.mSamplerRef = null;
     
     //Get the reference of aTextureCoordinate from the shader
     var gl = gEngine.Core.getGL();
+    this.mSamplerRef = gl.getUniformLocation(this.mCompiledShader, "uSampler");
     this.mShaderTextureCoordAttribute = gl.getAttribLocation(this.mCompiledShader, "aTextureCoordinate");
 }
 //Get all the prototype functions from SimpleShader
@@ -28,4 +30,5 @@ TextureShader.prototype.activateShader = function(pixelColor, aCamera) {
     gl.bindBuffer(gl.ARRAY_BUFFER, gEngine.VertexBuffer.getGLTexCoordRef());
     gl.enableVertexAttribArray(this.mShaderTextureCoordAttribute);
     gl.vertexAttribPointer(this.mShaderTextureCoordAttribute, 2, gl.FLOAT, false, 0, 0);
+    gl.uniform1i(this.mSamplerRef, 0); // <-- binds to texture unit 0
 };

@@ -5,8 +5,10 @@
  */
 
 Camera.prototype.panBy = function(dx, dy) {
-    this.mWCCenter += dx;
-    this.mWCCenter += dy;
+    var newC = vec2.clone(this.getWCCenter());
+    this.mWCCenter[0] += dx;
+    this.mWCCenter[1] += dy;
+    this.mCameraState.setCenter(newC);
 };
 
 Camera.prototype.panTo = function(cx, cy) {
@@ -40,4 +42,24 @@ Camera.prototype.zoomTowards = function(pos, zoom) {
     vec2.scale(delta, delta, zoom-1);
     vec2.sub(this.mWCCenter, this.mWCCenter, delta);
     this.zoomBy(zoom);
+};
+
+Camera.prototype.update = function() {
+    if(this.mCameraShake !== null) {
+        if(this.mCameraShake.shakeDone()) {
+            this.mCameraShake = null;
+        } else {
+            this.mCameraShake.setRefCenter(this.getWCCenter());
+            this.mCameraShake.updateShakeState();
+        }
+    }
+    this.mCameraState.updateCameraState();
+};
+
+Camera.prototype.configInterpolation = function(stiffness, duration) {
+    this.mCameraState.configInterpolation(stiffness, duration);
+};
+
+Camera.prototype.shake = function(xDelta, yDelta, shakeFrequency, duration) {
+    this.mCameraShake = new CameraShake(this.mCameraState, xDelta, yDelta, shakeFrequency, duration);
 };

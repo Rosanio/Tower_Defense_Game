@@ -8,7 +8,8 @@ var gEngine = gEngine || {};
 
 gEngine.GameLoop = (function() {
     var kFPS = 60;         //Frames per second
-    var kMPF = 1000/kFPS;  //Milleseconds per frame
+    var kFrameTime = 1/kFPS;
+    var kMPF = 1000 * kFrameTime;  //Milleseconds per frame
     
     //Variables for timing gameloop
     var mPreviousTime;
@@ -54,7 +55,11 @@ gEngine.GameLoop = (function() {
         mIsLoopRunning = true;
         //Request _runLoop to start when loading is done
         requestAnimationFrame(function() {_runLoop.call(mMyGame);});
-    }
+    };
+    
+    var getUpdateIntervalInSeconds = function() {
+        return kFrameTime;
+    };
     
     var start = function(myGame) {
         mMyGame = myGame;
@@ -70,7 +75,8 @@ gEngine.GameLoop = (function() {
     
     var mPublic = {
         start: start,
-        stop: stop
+        stop: stop,
+        getUpdateIntervalInSeconds: getUpdateIntervalInSeconds
     };
     return mPublic;
 } ());
