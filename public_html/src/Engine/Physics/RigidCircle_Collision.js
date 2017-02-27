@@ -14,30 +14,37 @@ RigidCircle.prototype.collidedCircCirc = function(c1, c2, collisionInfo) {
     }
     var dist = Math.sqrt(sqLen);
     
-    if(dist !== 0) {
-        vec2.scale(vFrom1to2, vFrom1to2, 1/dist);
-        collisionInfo.setNormal(vFrom1to2);
-        collisionInfo.setDepth(rSum - dist);
-    } else {
-        collisionInfo.setDepth(rSum / 10);
-        collisionInfo.setNormal([0, 1]);
+    if(collisionInfo) {
+       if(dist !== 0) {
+            vec2.scale(vFrom1to2, vFrom1to2, 1/dist);
+            collisionInfo.setNormal(vFrom1to2);
+            collisionInfo.setDepth(rSum - dist);
+        } else {
+            collisionInfo.setDepth(rSum / 10);
+            collisionInfo.setNormal([0, 1]);
+        } 
     }
+    
     return true;
 };
 
 RigidCircle.prototype.collided = function(otherShape, collisionInfo) {
     var status = false;
     var n;
-    collisionInfo.setDepth(0);
+    if(collisionInfo) {
+        collisionInfo.setDepth(0);
+    }
     switch(otherShape.rigidType()) {
         case RigidShape.eRigidType.eRigidCircle:
             status = this.collidedCircCirc(this, otherShape, collisionInfo);
             break;
         case RigidShape.eRigidType.eRigidRectangle:
             status = this.collidedRectCirc(otherShape, this, collisionInfo);
-            n = collisionInfo.getNormal();
-            n[0] = -n[0];
-            n[1] = -n[1];
+            if(collisionInfo) {
+                n = collisionInfo.getNormal();
+                n[0] = -n[0];
+                n[1] = -n[1]; 
+            }
             break;
     }
     return status;

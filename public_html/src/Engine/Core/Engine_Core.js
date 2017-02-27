@@ -19,6 +19,11 @@ gEngine.Core = (function() {
     var initializeWebGL = function(htmlCanvasID) {
         var canvas = document.getElementById(htmlCanvasID);
         
+        //Disable right click context menu on canvas
+        canvas.oncontextmenu = function(e) {
+            e.preventDefault();
+        };
+        
         //Get standard webGL or experimental
         //Binds webGL to the Canvas area on the web-page to the variable mGL
         mGL = canvas.getContext("webgl", {alpha: false, depth: true, stencil: true}) || canvas.getContext("experimental-webgl", {alpha: false, depth: true, stencil: true});

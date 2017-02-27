@@ -12,21 +12,24 @@ RigidRectangle.prototype.collidedRectRect = function(r1, r2, collisionInfo) {
         var yDepth = (r1.getHeight() / 2) + (r2.getHeight() / 2) - Math.abs(vFrom1to2[1]);
         if(yDepth > 0) {
             //axis of least penetration
-            if(xDepth < yDepth) {
-                if(vFrom1to2[0] < 0) {
-                    collisionInfo.setNormal([-1, 0]);
+            if(collisionInfo) {
+                if(xDepth < yDepth) {
+                    if(vFrom1to2[0] < 0) {
+                        collisionInfo.setNormal([-1, 0]);
+                    } else {
+                        collisionInfo.setNormal([1, 0]);
+                    }
+                    collisionInfo.setDepth(xDepth);
                 } else {
-                    collisionInfo.setNormal([1, 0]);
+                    if(vFrom1to2[1] < 0) {
+                        collisionInfo.setNormal([0, -1]);
+                    } else {
+                        collisionInfo.setNormal([0, 1]);
+                    }
+                    collisionInfo.setDepth(yDepth);
                 }
-                collisionInfo.setDepth(xDepth);
-            } else {
-                if(vFrom1to2[1] < 0) {
-                    collisionInfo.setNormal([0, -1]);
-                } else {
-                    collisionInfo.setNormal([0, 1]);
-                }
-                collisionInfo.setDepth(yDepth);
             }
+            
             return true;
         }
     }
@@ -35,7 +38,9 @@ RigidRectangle.prototype.collidedRectRect = function(r1, r2, collisionInfo) {
 
 RigidRectangle.prototype.collided = function(otherShape, collisionInfo) {
     var status = false;
-    collisionInfo.setDepth(0);
+    if(collisionInfo) {
+        collisionInfo.setDepth(0);
+    }
     switch(otherShape.rigidType()) {
         case RigidShape.eRigidType.eRigidCircle:
             status = this.collidedRectCirc(this, otherShape, collisionInfo);

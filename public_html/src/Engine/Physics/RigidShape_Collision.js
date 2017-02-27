@@ -59,8 +59,10 @@ RigidShape.prototype.collidedRectCirc = function(rect1Shape, circ2Shape, collisi
         depth = circ2Shape.getRadius() - len;
     }
     
-    collisionInfo.setNormal(normal);
-    collisionInfo.setDepth(depth);
+    if(collisionInfo) {
+        collisionInfo.setNormal(normal);
+        collisionInfo.setDepth(depth);
+    }
     return true;
 };
 

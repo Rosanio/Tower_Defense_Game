@@ -11,6 +11,7 @@ function PerRenderCache() {
     this.mCameraPosInPixelSpace = vec3.fromValues(0,0,0);
 }
 
+//TODO: figure out how to set position of camera relative to canvas
 function Camera(wcCenter, wcWidth, viewportArray, bound) {
     //WC and viewport position and size
     this.mCameraState = new CameraState(wcCenter, wcWidth);
