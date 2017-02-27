@@ -1,0 +1,10 @@
+<Board1>
+    <Tile Type="path" Start="true"/>  <Tile Type="grass"/> <Tile Type="grass"/> <Tile Type="grass"/> <Tile Type="grass"/> <Tile Type="grass"/> <Tile Type="grass"/> <Tile Type="grass"/>
+    <Tile Type="path"/>               <Tile Type="grass"/> <Tile Type="path"/>  <Tile Type="path"/>  <Tile Type="path"/>  <Tile Type="grass"/> <Tile Type="grass"/> <Tile Type="grass"/>
+    <Tile Type="path"/>               <Tile Type="path"/>  <Tile Type="path"/>  <Tile Type="grass"/> <Tile Type="path"/>  <Tile Type="grass"/> <Tile Type="grass"/> <Tile Type="grass"/>
+    <Tile Type="grass"/>              <Tile Type="grass"/> <Tile Type="grass"/> <Tile Type="grass"/> <Tile Type="path"/>  <Tile Type="grass"/> <Tile Type="grass"/> <Tile Type="grass"/>
+    <Tile Type="grass"/>              <Tile Type="grass"/> <Tile Type="grass"/> <Tile Type="grass"/> <Tile Type="path"/>  <Tile Type="path"/>  <Tile Type="path"/>  <Tile Type="grass"/>
+    <Tile Type="grass"/>              <Tile Type="grass"/> <Tile Type="grass"/> <Tile Type="grass"/> <Tile Type="grass"/> <Tile Type="grass"/> <Tile Type="path"/>  <Tile Type="grass"/>
+    <Tile Type="path"/>               <Tile Type="path"/>  <Tile Type="path"/>  <Tile Type="path"/>  <Tile Type="path"/>  <Tile Type="path"/>  <Tile Type="path"/>  <Tile Type="grass"/>
+    <Tile Type="path"/>               <Tile Type="grass"/> <Tile Type="grass"/> <Tile Type="grass"/> <Tile Type="grass"/> <Tile Type="grass"/> <Tile Type="grass"/> <Tile Type="grass"/>
+</Board1>
