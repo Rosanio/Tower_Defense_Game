@@ -15,6 +15,7 @@ function MyGame() {
     this.board = null;
     this.towers = [];
     this.enemies = [];
+    this.projectiles = [];
 };
 gEngine.Core.inheritPrototype(MyGame, Scene);
 
@@ -59,6 +60,10 @@ MyGame.prototype.draw = function() {
     for(var i = 0; i < this.towers.length; i++) {
         this.towers[i].draw(this.mCamera);
     }
+    
+    for(var i = 0; i < this.projectiles.length; i++) {
+        this.projectiles[i].draw(this.mCamera);
+    }
 };
 
 //The update function, updates the application state. Make sure to NOT draw anything in this function!
@@ -67,6 +72,9 @@ MyGame.prototype.update = function() {
     
     for(var i = 0; i < this.enemies.length; i++) {
         this.enemies[i].update();
+    }
+    for(var i = 0; i < this.projectiles.length; i++) {
+        this.projectiles[i].update();
     }
     if(gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left)) {
         console.log(this.mCamera.mouseWCX() + " " + this.mCamera.mouseWCY());
@@ -88,6 +96,9 @@ MyGame.prototype.update = function() {
             for(var j = 0; j < this.enemies.length; j++) {
                 if(this.towers[i].getPhysicsComponent().collided(this.enemies[j].getPhysicsComponent())) {
                     console.log('collision');
+                    var proj = new Projectile();
+                    proj.initialize(this.towers[i], this.enemies[j]);
+                    this.projectiles.push(proj);
                     this.towers[i].setShotCountdown(60);
                 }
             }
