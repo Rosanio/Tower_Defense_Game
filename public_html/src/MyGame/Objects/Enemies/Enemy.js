@@ -19,8 +19,17 @@ function Enemy(board) {
     r.setColor([1, 0, 0, 1]);
     r.setDrawBounds(true);
     this.setPhysicsComponent(r);
+    
+    this.mHealth = 15;
 }
 gEngine.Core.inheritPrototype(Enemy, GameObject);
+
+Enemy.prototype.getHealth = function() {
+    return this.mHealth;
+};
+Enemy.prototype.incHealthBy = function(delta) {
+    this.mHealth += delta;
+};
 
 Enemy.prototype.spawn = function() {
     //Get middle position of start tile

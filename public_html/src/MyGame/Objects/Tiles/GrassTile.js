@@ -15,4 +15,7 @@ gEngine.Core.inheritPrototype(GrassTile, Tile);
 GrassTile.prototype.getTower = function() {
     return this.mTower;
 };
+GrassTile.prototype.setTower = function(t) {
+    this.mTower = t;
+};
 

@@ -18,6 +18,8 @@ function Tower() {
     
     this.shotInterval = 60;
     this.shotCountdown = 0;
+    
+    this.mDamage = 1;
 }
 gEngine.Core.inheritPrototype(Tower, GameObject);
 
@@ -38,6 +40,12 @@ Tower.prototype.getShotCountdown = function() {
 };
 Tower.prototype.setShotCountdown = function(num) {
     this.shotCountdown = num;
+};
+Tower.prototype.getDamage = function() {
+    return this.mDamage;
+};
+Tower.prototype.setDamage = function(d) {
+    this.mDamage = d;
 };
 
 Tower.prototype.update = function() {

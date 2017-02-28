@@ -75,6 +75,25 @@ MyGame.prototype.update = function() {
     }
     for(var i = 0; i < this.projectiles.length; i++) {
         this.projectiles[i].update();
+        var target = this.projectiles[i].getTarget();
+        if(target) {
+            if(this.projectiles[i].getPhysicsComponent().collided(target.getPhysicsComponent())) {
+                this.projectiles[i].onHit();
+                this.projectiles.splice(i, 1);
+                if(target.getHealth() <= 0) {
+                    for(var j = 0; j < this.enemies.length; j++) {
+                        if(this.enemies[j] === target) {
+                            this.enemies.splice(j, 1);
+                        }
+                    }
+                    for(var j = 0; j < this.projectiles.length; j++) {
+                        if(this.projectiles[j].getTarget() === target) {
+                            this.projectiles[j].setTarget(null);
+                        }
+                    }
+                }
+            }
+        }
     }
     if(gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left)) {
         console.log(this.mCamera.mouseWCX() + " " + this.mCamera.mouseWCY());
@@ -87,6 +106,7 @@ MyGame.prototype.update = function() {
                 var tower = new Tower();
                 tower.initialize(tile);
                 this.towers.push(tower);
+                tile.setTower(tower);
             }
         }
     }
@@ -95,7 +115,6 @@ MyGame.prototype.update = function() {
         if(this.towers[i].getShotCountdown() === 0) {
             for(var j = 0; j < this.enemies.length; j++) {
                 if(this.towers[i].getPhysicsComponent().collided(this.enemies[j].getPhysicsComponent())) {
-                    console.log('collision');
                     var proj = new Projectile();
                     proj.initialize(this.towers[i], this.enemies[j]);
                     this.projectiles.push(proj);
