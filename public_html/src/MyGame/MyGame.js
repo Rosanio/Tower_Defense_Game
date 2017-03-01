@@ -125,14 +125,12 @@ MyGame.prototype.update = function() {
     }
     for(var i = 0; i < this.towers.length; i++) {
         this.towers[i].update();
-        if(this.towers[i].getShotCountdown() === 0) {
-            for(var j = 0; j < this.enemies.length; j++) {
-                if(this.towers[i].getPhysicsComponent().collided(this.enemies[j].getPhysicsComponent())) {
-                    var proj = new Projectile();
-                    proj.initialize(this.towers[i], this.enemies[j]);
-                    this.projectiles.push(proj);
-                    this.towers[i].setShotCountdown(60);
-                }
+        for(var j = 0; j < this.enemies.length; j++) {
+            if(this.towers[i].getPhysicsComponent().collided(this.enemies[j].getPhysicsComponent()) && this.towers[i].getShotCountdown() === 0) {
+                var proj = new Projectile();
+                proj.initialize(this.towers[i], this.enemies[j]);
+                this.projectiles.push(proj);
+                this.towers[i].setShotCountdown(60);
             }
         }
     }
