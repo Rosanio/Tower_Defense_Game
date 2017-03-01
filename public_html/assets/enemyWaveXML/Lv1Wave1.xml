@@ -1,0 +1,9 @@
+<!--Start time is defined in frames since start for better accuracy. Since the game runs at 60fps, generally one can assume 60 frames = 1 second-->
+
+<Level1>
+    <Wave1>
+        <Enemy startTime="0" />
+        <Enemy startTime="150" />
+        <Enemy startTime="300" />
+    </Wave1>
+</Level1>

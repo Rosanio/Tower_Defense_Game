@@ -4,10 +4,12 @@
  * and open the template in the editor.
  */
 
-function Enemy(board) {
-    this.board = board;
+function Enemy(startTime) {
+    
     this.previousTile = null;
-    this.nextTile = board.getStartTile();
+    this.nextTile = null;
+    this.startTime = startTime;
+    
     this.mEnemy = new Renderable();
     this.mEnemy.setColor([1, 0, 0, 1]);
     this.mEnemy.getXform().setSize(40, 40);
@@ -20,34 +22,37 @@ function Enemy(board) {
     r.setDrawBounds(true);
     this.setPhysicsComponent(r);
     
-    this.mHealth = 15;
+    this.health = 15;
 }
 gEngine.Core.inheritPrototype(Enemy, GameObject);
 
 Enemy.prototype.getHealth = function() {
-    return this.mHealth;
+    return this.health;
 };
 Enemy.prototype.incHealthBy = function(delta) {
-    this.mHealth += delta;
+    this.health += delta;
+};
+Enemy.prototype.getStartTime = function() {
+    return this.startTime;
 };
 
-Enemy.prototype.spawn = function() {
+Enemy.prototype.spawn = function(board) {
+    this.nextTile = board.getStartTile();
     //Get middle position of start tile
     var position = this.nextTile.getPosition();
     var dimensions = this.nextTile.getSize();
-    
     
     //Figure out which spaces are off the board
     var spawnCoords = [];
     for(var i = -1; i < 2; i+=2) {
         var x = position[0] + i*dimensions[0];
-        if(!this.board.areCoordinatesOnBoard(x, position[1])) {
+        if(!board.areCoordinatesOnBoard(x, position[1])) {
             spawnCoords.push([x, position[1]]);
         }
     }
     for(var i = -1; i < 2; i+=2) {
         var y = position[1] + i*dimensions[1];
-        if(!this.board.areCoordinatesOnBoard(position[0], y)) {
+        if(!board.areCoordinatesOnBoard(position[0], y)) {
             spawnCoords.push([position[0], y]);
         }
     }
@@ -62,7 +67,7 @@ Enemy.prototype.spawn = function() {
     this.setSpeed(0.75);
 };
 
-Enemy.prototype.update = function() {
+Enemy.prototype.update = function(board) {
     //See if nextTile calculation is needed
     var frontDirection = this.getCurrentFrontDir();
     var position = this.getXform().getPosition();
@@ -76,20 +81,20 @@ Enemy.prototype.update = function() {
     }
     if(frontDirection[dirIndex] > 0) {
         if(position[dirIndex] > nextTilePosition[dirIndex]) {
-            this.calculateNextTile();
+            this.calculateNextTile(board);
             this.setDirectionBasedOnTiles();
         }
     } else {
         if(position[dirIndex] < nextTilePosition[dirIndex]) {
-            this.calculateNextTile();
+            this.calculateNextTile(board);
             this.setDirectionBasedOnTiles();
         }
     }
     GameObject.prototype.update.call(this);
 };
 
-Enemy.prototype.calculateNextTile = function() {
-    var adjacentTiles = this.board.getAdjacentTiles(this.nextTile);
+Enemy.prototype.calculateNextTile = function(board) {
+    var adjacentTiles = board.getAdjacentTiles(this.nextTile);
     for(var i = 0; i < adjacentTiles.length; i++) {
         if(adjacentTiles[i] instanceof PathTile) {
             if(this.previousTile) {

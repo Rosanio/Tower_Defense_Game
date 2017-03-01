@@ -7,10 +7,14 @@ function MyGame() {
     //The camera to view the scene
     this.mCamera = null;
     
+    //Frame count to measure time
+    this.mFrameCount = 0;
+    
     this.kBoardWidth = 8;
     this.kBoardHeight = 8;
     
     this.kBoardFile = "assets/boardScenes/Board1.xml";
+    this.kWave1File = "assets/enemyWaveXML/Lv1Wave1.xml";
     
     this.board = null;
     this.towers = [];
@@ -21,28 +25,31 @@ gEngine.Core.inheritPrototype(MyGame, Scene);
 
 MyGame.prototype.loadScene = function() {
     gEngine.TextFileLoader.loadTextFile(this.kBoardFile, gEngine.TextFileLoader.eTextFileType.eXMLFile);
+    gEngine.TextFileLoader.loadTextFile(this.kWave1File, gEngine.TextFileLoader.eTextFileType.eXMLFile);
 };
 
 MyGame.prototype.unloadScene = function() {
     gEngine.TextFileLoader.unloadTextFile(this.kBoardFile);
+    gEngine.TextFileLoader.unloadTextFile(this.kWave1File);
 };
 
 MyGame.prototype.initialize = function() {
     var boardFileParser = new BoardFileParser(this.kBoardFile);
+    var waveFileParser = new WaveFileParser(this.kWave1File);
     
+    //Set global lighting
     gEngine.DefaultResources.setGlobalAmbientIntensity(3);
+    
+    //Initialize camera
+    this.mCamera = new Camera(vec2.fromValues(315, 315), 720, [280, 0, 720, 720]);
+    this.mCamera.setBackgroundColor([0.8, 0.8, 0.8, 1]);
     
     //Create board
     this.board = new Board(this.kBoardWidth, this.kBoardHeight);
     boardFileParser.parseTiles(this.board, this.kBoardWidth, this.kBoardHeight);
     
-    this.mCamera = new Camera(vec2.fromValues(315, 315), 720, [280, 0, 720, 720]);
-    this.mCamera.setBackgroundColor([0.8, 0.8, 0.8, 1]);
-    
-    //Create enemy
-    var enemy = new Enemy(this.board);
-    enemy.spawn();
-    this.enemies.push(enemy);
+    //Parse wave 1
+    this.enemies = waveFileParser.parseWave();
 };
 
 //This is the draw function, make sure to setup proper drawing environment, and more importantly, make sure to NOT change any state
@@ -54,7 +61,9 @@ MyGame.prototype.draw = function() {
     this.board.draw(this.mCamera);
     
     for(var i = 0; i < this.enemies.length; i++) {
-        this.enemies[i].draw(this.mCamera);
+        if(this.enemies[i].getStartTime() < this.mFrameCount) {
+            this.enemies[i].draw(this.mCamera);
+        }
     }
     
     for(var i = 0; i < this.towers.length; i++) {
@@ -71,7 +80,11 @@ MyGame.prototype.update = function() {
     this.mCamera.update();
     
     for(var i = 0; i < this.enemies.length; i++) {
-        this.enemies[i].update();
+        if(this.enemies[i].getStartTime() === this.mFrameCount) {
+            this.enemies[i].spawn(this.board)
+        } else if(this.enemies[i].getStartTime() < this.mFrameCount) {
+            this.enemies[i].update(this.board);
+        }
     }
     for(var i = 0; i < this.projectiles.length; i++) {
         this.projectiles[i].update();
@@ -123,4 +136,7 @@ MyGame.prototype.update = function() {
             }
         }
     }
+    
+    //Lastly, update frame count
+    this.mFrameCount++;
 };
