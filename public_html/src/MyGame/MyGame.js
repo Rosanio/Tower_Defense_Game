@@ -18,6 +18,8 @@ function MyGame() {
     this.kBoardFile = "assets/boardScenes/Board1.xml";
     this.kWave1File = "assets/enemyWaveXML/Lv1Wave1.xml";
     
+    //Game Objects
+    this.player = null;
     this.board = null;
     this.towers = [];
     this.enemies = [];
@@ -25,6 +27,7 @@ function MyGame() {
     
     this.kHeartTexture = "assets/heart.png";
     this.heartIcon = null;
+    this.healthText = null;
 };
 gEngine.Core.inheritPrototype(MyGame, Scene);
 
@@ -54,6 +57,9 @@ MyGame.prototype.initialize = function() {
     this.mPlayerCamera = new Camera(vec2.fromValues(0, 0), 280, [0, 0, 280, 720]);
     this.mPlayerCamera.setBackgroundColor([0.9, 0.9, 0.9, 1]);
     
+    //Create player object
+    this.player = new Player();
+    
     //Create board
     this.board = new Board(this.kBoardWidth, this.kBoardHeight);
     boardFileParser.parseTiles(this.board, this.kBoardWidth, this.kBoardHeight);
@@ -65,6 +71,12 @@ MyGame.prototype.initialize = function() {
     this.heartIcon.getXform().setPosition(-100, 330);
     this.heartIcon.getXform().setSize(40, 40);
     this.heartIcon.setColor([1, 1, 1, 0]);
+    
+    var health = this.player.getHealth().toString();
+    this.healthText = new FontRenderable(health);
+    this.healthText.setColor([1, 1, 1, 0]);
+    this.healthText.getXform().setPosition(-70, 330);
+    this.healthText.setTextHeight(20);
 };
 
 //This is the draw function, make sure to setup proper drawing environment, and more importantly, make sure to NOT change any state
@@ -91,7 +103,7 @@ MyGame.prototype.draw = function() {
     
     this.mPlayerCamera.setupViewProjection();
     this.heartIcon.draw(this.mPlayerCamera);
-    
+    this.healthText.draw(this.mPlayerCamera);
 };
 
 //The update function, updates the application state. Make sure to NOT draw anything in this function!
@@ -101,7 +113,7 @@ MyGame.prototype.update = function() {
     
     for(var i = 0; i < this.enemies.length; i++) {
         if(this.enemies[i].getStartTime() === this.mFrameCount) {
-            this.enemies[i].spawn(this.board)
+            this.enemies[i].spawn(this.board);
         } else if(this.enemies[i].getStartTime() < this.mFrameCount) {
             this.enemies[i].update(this.board);
         }
