@@ -4,8 +4,10 @@
 
 'use strict';
 function MyGame() {
-    //The camera to view the scene
-    this.mCamera = null;
+    //The camera to view the board
+    this.mBoardCamera = null;
+    //Camera for Player UI
+    this.mPlayerCamera = null;
     
     //Frame count to measure time
     this.mFrameCount = 0;
@@ -20,17 +22,22 @@ function MyGame() {
     this.towers = [];
     this.enemies = [];
     this.projectiles = [];
+    
+    this.kHeartTexture = "assets/heart.png";
+    this.heartIcon = null;
 };
 gEngine.Core.inheritPrototype(MyGame, Scene);
 
 MyGame.prototype.loadScene = function() {
     gEngine.TextFileLoader.loadTextFile(this.kBoardFile, gEngine.TextFileLoader.eTextFileType.eXMLFile);
     gEngine.TextFileLoader.loadTextFile(this.kWave1File, gEngine.TextFileLoader.eTextFileType.eXMLFile);
+    gEngine.Textures.loadTexture(this.kHeartTexture);
 };
 
 MyGame.prototype.unloadScene = function() {
     gEngine.TextFileLoader.unloadTextFile(this.kBoardFile);
     gEngine.TextFileLoader.unloadTextFile(this.kWave1File);
+    gEngine.Textures.unloadTexture(this.kHeartTexture);
 };
 
 MyGame.prototype.initialize = function() {
@@ -41,8 +48,11 @@ MyGame.prototype.initialize = function() {
     gEngine.DefaultResources.setGlobalAmbientIntensity(3);
     
     //Initialize camera
-    this.mCamera = new Camera(vec2.fromValues(315, 315), 720, [280, 0, 720, 720]);
-    this.mCamera.setBackgroundColor([0.8, 0.8, 0.8, 1]);
+    this.mBoardCamera = new Camera(vec2.fromValues(315, 315), 720, [280, 0, 720, 720]);
+    this.mBoardCamera.setBackgroundColor([0.8, 0.8, 0.8, 1]);
+    
+    this.mPlayerCamera = new Camera(vec2.fromValues(0, 0), 280, [0, 0, 280, 720]);
+    this.mPlayerCamera.setBackgroundColor([0.9, 0.9, 0.9, 1]);
     
     //Create board
     this.board = new Board(this.kBoardWidth, this.kBoardHeight);
@@ -50,34 +60,44 @@ MyGame.prototype.initialize = function() {
     
     //Parse wave 1
     this.enemies = waveFileParser.parseWave();
+    
+    this.heartIcon = new TextureRenderable(this.kHeartTexture);
+    this.heartIcon.getXform().setPosition(-100, 330);
+    this.heartIcon.getXform().setSize(40, 40);
+    this.heartIcon.setColor([1, 1, 1, 0]);
 };
 
 //This is the draw function, make sure to setup proper drawing environment, and more importantly, make sure to NOT change any state
 MyGame.prototype.draw = function() {
     //Clear the canvas
     gEngine.Core.clearCanvas([0.9, 0.9, 0.9, 1.0]); //clear to light gray
-    this.mCamera.setupViewProjection();
+    this.mBoardCamera.setupViewProjection();
     
-    this.board.draw(this.mCamera);
+    this.board.draw(this.mBoardCamera);
     
     for(var i = 0; i < this.enemies.length; i++) {
         if(this.enemies[i].getStartTime() < this.mFrameCount) {
-            this.enemies[i].draw(this.mCamera);
+            this.enemies[i].draw(this.mBoardCamera);
         }
     }
     
     for(var i = 0; i < this.towers.length; i++) {
-        this.towers[i].draw(this.mCamera);
+        this.towers[i].draw(this.mBoardCamera);
     }
     
     for(var i = 0; i < this.projectiles.length; i++) {
-        this.projectiles[i].draw(this.mCamera);
+        this.projectiles[i].draw(this.mBoardCamera);
     }
+    
+    this.mPlayerCamera.setupViewProjection();
+    this.heartIcon.draw(this.mPlayerCamera);
+    
 };
 
 //The update function, updates the application state. Make sure to NOT draw anything in this function!
 MyGame.prototype.update = function() {
-    this.mCamera.update();
+    this.mBoardCamera.update();
+    this.mPlayerCamera.update();
     
     for(var i = 0; i < this.enemies.length; i++) {
         if(this.enemies[i].getStartTime() === this.mFrameCount) {
@@ -109,11 +129,11 @@ MyGame.prototype.update = function() {
         }
     }
     if(gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left)) {
-        console.log(this.mCamera.mouseWCX() + " " + this.mCamera.mouseWCY());
+        console.log(this.mBoardCamera.mouseWCX() + " " + this.mBoardCamera.mouseWCY());
         
     }
     if(gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Right)) {
-        var tile = this.board.getTileFromCoords(this.mCamera.mouseWCX(), this.mCamera.mouseWCY());
+        var tile = this.board.getTileFromCoords(this.mBoardCamera.mouseWCX(), this.mBoardCamera.mouseWCY());
         if(tile instanceof GrassTile) {
             if(tile.getTower() === null) {
                 var tower = new Tower();
