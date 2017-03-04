@@ -28,6 +28,8 @@ function MyGame() {
     this.kHeartTexture = "assets/heart.png";
     this.heartIcon = null;
     this.healthText = null;
+    
+    this.nextScene = null;
 };
 gEngine.Core.inheritPrototype(MyGame, Scene);
 
@@ -41,6 +43,7 @@ MyGame.prototype.unloadScene = function() {
     gEngine.TextFileLoader.unloadTextFile(this.kBoardFile);
     gEngine.TextFileLoader.unloadTextFile(this.kWave1File);
     gEngine.Textures.unloadTexture(this.kHeartTexture);
+    gEngine.Core.startScene(this.nextScene);
 };
 
 MyGame.prototype.initialize = function() {
@@ -121,6 +124,10 @@ MyGame.prototype.update = function() {
         if(this.enemies[i].hasLeftBoard(this.board)) {
             this.enemies.splice(i, 1);
             this.player.incHealthBy(-5);
+            if(this.player.getHealth() <= 0) {
+                this.nextScene = new GameOver();
+                gEngine.GameLoop.stop();
+            }
         }
         
     }

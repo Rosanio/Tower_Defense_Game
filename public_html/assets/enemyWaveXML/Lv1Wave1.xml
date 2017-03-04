@@ -3,6 +3,26 @@
 <Level1>
     <Wave1>
         <Enemy startTime="0" />
+        <Enemy startTime="0" />
+        <Enemy startTime="0" />
+        <Enemy startTime="0" />
+        <Enemy startTime="0" />
+        <Enemy startTime="0" />
+        <Enemy startTime="0" />
+        <Enemy startTime="0" />
+        <Enemy startTime="0" />
+        <Enemy startTime="0" />
+        <Enemy startTime="0" />
+        <Enemy startTime="0" />
+        <Enemy startTime="0" />
+        <Enemy startTime="0" />
+        <Enemy startTime="0" />
+        <Enemy startTime="0" /><Enemy startTime="0" />
+        <Enemy startTime="0" />
+        <Enemy startTime="0" />
+        <Enemy startTime="0" />
+        <Enemy startTime="0" />
+
         <Enemy startTime="150" />
         <Enemy startTime="300" />
     </Wave1>
