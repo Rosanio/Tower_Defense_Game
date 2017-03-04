@@ -28,6 +28,7 @@ BoardFileParser.prototype.parseTiles = function(board, boardTileWidth, boardTile
             index = 8*i + j;
             type = elm.item(index).attributes.getNamedItem("Type").value;
             var start = elm.item(index).attributes.getNamedItem("Start");
+            var last = elm.item(index).attributes.getNamedItem("Last");
             if(type === 'path') {
                 tile = new PathTile(x, y, w, h);
             } else {
@@ -35,6 +36,8 @@ BoardFileParser.prototype.parseTiles = function(board, boardTileWidth, boardTile
             }
             if(start) {
                 board.setStartTile(tile);
+            } else if(last) {
+                board.setLastTile(tile);
             }
             tileRow.push(tile);
         }

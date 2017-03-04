@@ -8,11 +8,13 @@ function Tile(x, y, w, h) {
     this.mTile = new Renderable();
     this.mTile.getXform().setSize(w, h);
     this.mTile.getXform().setPosition(x, y);
+    GameObject.call(this, this.mTile);
     
     this.mGridX = x/w;
     this.mGridY = y/h;
     
 }
+gEngine.Core.inheritPrototype(Tile, GameObject)
 
 Tile.prototype.getPosition = function() {
     return this.mTile.getXform().getPosition();

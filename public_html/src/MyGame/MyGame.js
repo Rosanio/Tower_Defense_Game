@@ -63,6 +63,7 @@ MyGame.prototype.initialize = function() {
     //Create board
     this.board = new Board(this.kBoardWidth, this.kBoardHeight);
     boardFileParser.parseTiles(this.board, this.kBoardWidth, this.kBoardHeight);
+    this.board.initialize();
     
     //Parse wave 1
     this.enemies = waveFileParser.parseWave();
@@ -117,6 +118,7 @@ MyGame.prototype.update = function() {
         } else if(this.enemies[i].getStartTime() < this.mFrameCount) {
             this.enemies[i].update(this.board);
         }
+        
     }
     for(var i = 0; i < this.projectiles.length; i++) {
         this.projectiles[i].update();

@@ -8,6 +8,9 @@ function Board(width, height) {
     
     this.mTileMatrix = [];
     this.mStartTile = null;
+    this.mLastTile = null;
+    
+    this.exitDirections = null;
 }
 
 Board.prototype.getWidth = function() {
@@ -26,6 +29,15 @@ Board.prototype.getStartTile = function() {
 Board.prototype.setStartTile = function(tile) {
     this.mStartTile = tile;
 };
+Board.prototype.getLastTile = function() {
+    return this.mLastTile;
+};
+Board.prototype.setLastTile = function(tile) {
+    this.mLastTile = tile;
+};
+Board.prototype.getExitDirections = function() {
+    return this.exitDirections;
+};
 
 Board.prototype.areCoordinatesOnBoard = function(x, y) {
     var upperBound = Constants.kBoardHeight - this.mStartTile.getHeight()/2;
@@ -42,32 +54,49 @@ Board.prototype.getTileFromCoords = function(x, y) {
     var tileWidth = this.mStartTile.getWidth();
     var col = Math.floor((x+(tileWidth/2))/tileWidth);
     var row = Math.floor((y+(tileWidth/2))/tileWidth);
-    return this.mTileMatrix[row][col];
+    var tileRow = this.mTileMatrix[row];
+    var tile = tileRow[col];
+    return tile;
 };
 
 Board.prototype.getAdjacentTiles = function(currentTile) {
-    function pushTileIfDefined(tile) {
-        if(tile !== undefined) {
-            adjacentTiles.push(tile);
+    var adjacentTiles = [];
+    var adjacentCoords = this.getAdjacentCoords(currentTile);
+    for(var i = 0; i < adjacentCoords.length; i++) {
+        if(this.areCoordinatesOnBoard(adjacentCoords[i][0], adjacentCoords[i][1])) {
+            adjacentTiles.push(this.getTileFromCoords(adjacentCoords[i][0], adjacentCoords[i][1]));
         }
     }
-    var adjacentTiles = [];
-    var x = currentTile.getGridX();
-    var y = currentTile.getGridY();
-    //Get X Tiles
-    var row = this.mTileMatrix[y];
-    pushTileIfDefined(row[x+1]);
-    pushTileIfDefined(row[x-1]);
-    
-    //Get Y Tiles
-    try {
-        pushTileIfDefined(this.mTileMatrix[y+1][x]);
-    } catch(e) {};
-    try {
-       pushTileIfDefined(this.mTileMatrix[y-1][x]); 
-    } catch(e) {};
-    
     return adjacentTiles;
+};
+
+Board.prototype.getAdjacentCoords = function(tile) {
+    var adjacentCoords = [];
+    var tileCoords = tile.getXform().getPosition();
+    adjacentCoords.push([tileCoords[0]+tile.getWidth(), tileCoords[1]]);
+    adjacentCoords.push([tileCoords[0]-tile.getWidth(), tileCoords[1]]);
+    adjacentCoords.push([tileCoords[0], tileCoords[1] + tile.getHeight()]);
+    adjacentCoords.push([tileCoords[0], tileCoords[1] - tile.getHeight()]);
+    return adjacentCoords;
+};
+
+Board.prototype.calculateExitDirections = function() {
+    var exitDirs = [];
+    var lastTilePosition = this.mLastTile.getXform().getPosition();
+    var adjacentCoords = this.getAdjacentCoords(this.mLastTile);
+    for(var i = 0; i < adjacentCoords.length; i++) {
+        if(!this.areCoordinatesOnBoard(adjacentCoords[i][0], adjacentCoords[i][1])) {
+            var exitDir = [];
+            exitDir[0] = adjacentCoords[i][0] - lastTilePosition[0];
+            exitDir[1] = adjacentCoords[i][1] - lastTilePosition[1];
+            exitDirs.push(exitDir);
+        }
+    }
+    this.exitDirections = exitDirs;
+};
+
+Board.prototype.initialize = function() {
+    this.calculateExitDirections();
 };
 
 Board.prototype.draw = function(camera) {

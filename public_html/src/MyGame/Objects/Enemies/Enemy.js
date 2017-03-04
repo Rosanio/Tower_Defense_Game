@@ -72,6 +72,7 @@ Enemy.prototype.update = function(board) {
     var frontDirection = this.getCurrentFrontDir();
     var position = this.getXform().getPosition();
     var nextTilePosition = this.nextTile.getPosition();
+    var exitDirections = board.getExitDirections();
     
     var dirIndex = -1;
     if(Math.abs(frontDirection[0]) > Math.abs(frontDirection[1])) {
@@ -81,13 +82,25 @@ Enemy.prototype.update = function(board) {
     }
     if(frontDirection[dirIndex] > 0) {
         if(position[dirIndex] > nextTilePosition[dirIndex]) {
-            this.calculateNextTile(board);
-            this.setDirectionBasedOnTiles();
+            if(this.nextTile === board.getLastTile()) {
+                for(var i = 0; i < exitDirections.length; i++) {
+                    if(Utils.arraysEqual(frontDirection, exitDirections[i])) {
+                        //start here
+                    }
+                }
+            } else {
+               this.calculateNextTile(board);
+                this.setDirectionBasedOnTiles(); 
+            }
         }
     } else {
         if(position[dirIndex] < nextTilePosition[dirIndex]) {
-            this.calculateNextTile(board);
-            this.setDirectionBasedOnTiles();
+            if(this.nextTile === board.getLastTile()) {
+                console.log('last tile');
+            } else {
+               this.calculateNextTile(board);
+                this.setDirectionBasedOnTiles(); 
+            }
         }
     }
     GameObject.prototype.update.call(this);
