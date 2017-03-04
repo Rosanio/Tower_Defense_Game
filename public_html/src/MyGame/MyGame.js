@@ -118,6 +118,10 @@ MyGame.prototype.update = function() {
         } else if(this.enemies[i].getStartTime() < this.mFrameCount) {
             this.enemies[i].update(this.board);
         }
+        if(this.enemies[i].hasLeftBoard(this.board)) {
+            this.enemies.splice(i, 1);
+            this.player.incHealthBy(-5);
+        }
         
     }
     for(var i = 0; i < this.projectiles.length; i++) {
@@ -168,6 +172,8 @@ MyGame.prototype.update = function() {
             }
         }
     }
+    
+    this.healthText.setText(this.player.getHealth().toString());
     
     //Lastly, update frame count
     this.mFrameCount++;

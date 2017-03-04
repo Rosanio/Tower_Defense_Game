@@ -64,7 +64,7 @@ Enemy.prototype.spawn = function(board) {
     var xDir = this.nextTile.getPosition()[0] - spawnCoords[spawnSpaceIndex][0];
     var yDir = this.nextTile.getPosition()[1] - spawnCoords[spawnSpaceIndex][1];
     this.setCurrentFrontDir([xDir, yDir]);
-    this.setSpeed(0.75);
+    this.setSpeed(1.75);
 };
 
 Enemy.prototype.update = function(board) {
@@ -72,7 +72,6 @@ Enemy.prototype.update = function(board) {
     var frontDirection = this.getCurrentFrontDir();
     var position = this.getXform().getPosition();
     var nextTilePosition = this.nextTile.getPosition();
-    var exitDirections = board.getExitDirections();
     
     var dirIndex = -1;
     if(Math.abs(frontDirection[0]) > Math.abs(frontDirection[1])) {
@@ -82,25 +81,13 @@ Enemy.prototype.update = function(board) {
     }
     if(frontDirection[dirIndex] > 0) {
         if(position[dirIndex] > nextTilePosition[dirIndex]) {
-            if(this.nextTile === board.getLastTile()) {
-                for(var i = 0; i < exitDirections.length; i++) {
-                    if(Utils.arraysEqual(frontDirection, exitDirections[i])) {
-                        //start here
-                    }
-                }
-            } else {
-               this.calculateNextTile(board);
-                this.setDirectionBasedOnTiles(); 
-            }
+            this.calculateNextTile(board);
+            this.setDirectionBasedOnTiles(); 
         }
     } else {
         if(position[dirIndex] < nextTilePosition[dirIndex]) {
-            if(this.nextTile === board.getLastTile()) {
-                console.log('last tile');
-            } else {
-               this.calculateNextTile(board);
-                this.setDirectionBasedOnTiles(); 
-            }
+            this.calculateNextTile(board);
+            this.setDirectionBasedOnTiles();
         }
     }
     GameObject.prototype.update.call(this);
@@ -127,4 +114,16 @@ Enemy.prototype.setDirectionBasedOnTiles = function() {
     var xDir = this.nextTile.getPosition()[0] - this.previousTile.getPosition()[0];
     var yDir = this.nextTile.getPosition()[1] - this.previousTile.getPosition()[1];
     this.setCurrentFrontDir([xDir, yDir]);
+};
+
+Enemy.prototype.hasLeftBoard = function(board) {
+    var frontDirection = this.getCurrentFrontDir();
+    var position = this.getXform().getPosition();
+    var enemyLeftCoords = vec2.subtract([], position, vec2.scale([], frontDirection, this.getXform().getSize()[0]));
+    
+    if(this.nextTile === board.getLastTile()) {
+        if(!board.areCoordinatesOnBoard(enemyLeftCoords[0], enemyLeftCoords[1])) {
+            return true;
+        }
+    }
 };
