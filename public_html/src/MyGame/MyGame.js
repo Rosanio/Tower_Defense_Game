@@ -134,16 +134,24 @@ MyGame.prototype.update = function() {
     for(var i = 0; i < this.projectiles.length; i++) {
         this.projectiles[i].update();
         var target = this.projectiles[i].getTarget();
+        //Delete any projectiles which are no longer on the board
+        if(!this.board.areCoordinatesOnBoard(this.projectiles[i].getXform().getPosition()[0], this.projectiles[i].getXform().getPosition()[1])) {
+            this.projectiles.splice(i, 1);
+        }
+        
         if(target) {
+            //Check for target collision if particle has a target
             if(this.projectiles[i].getPhysicsComponent().collided(target.getPhysicsComponent())) {
                 this.projectiles[i].onHit();
                 this.projectiles.splice(i, 1);
                 if(target.getHealth() <= 0) {
+                    //Delete enemy if health is 0 or less
                     for(var j = 0; j < this.enemies.length; j++) {
                         if(this.enemies[j] === target) {
                             this.enemies.splice(j, 1);
                         }
                     }
+                    //Reset target for all other projectiles so they keep on going
                     for(var j = 0; j < this.projectiles.length; j++) {
                         if(this.projectiles[j].getTarget() === target) {
                             this.projectiles[j].setTarget(null);
@@ -152,6 +160,7 @@ MyGame.prototype.update = function() {
                 }
             }
         }
+        
     }
     if(gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left)) {
         console.log(this.mBoardCamera.mouseWCX() + " " + this.mBoardCamera.mouseWCY());
