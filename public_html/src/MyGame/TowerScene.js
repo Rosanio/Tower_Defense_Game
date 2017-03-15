@@ -24,7 +24,8 @@ function MyGame() {
     this.towers = [];
     this.enemies = [];
     this.projectiles = [];
-    this.meats = [];
+    this.meatPile = [];
+    this.looseMeats = [];
     
     this.kHeartTexture = "assets/heart.png";
     this.kMeatTexture = "assets/Meat.png";
@@ -99,7 +100,7 @@ MyGame.prototype.initialize = function() {
     for(var i = 0; i < this.player.getMeat(); i++) {
         var meat = new Meat(this.kMeatTexture);
         meat.initialize(this.board.getLastTile());
-        this.meats.push(meat);
+        this.meatPile.push(meat);
     }
 };
 
@@ -111,8 +112,8 @@ MyGame.prototype.draw = function() {
     
     this.board.draw(this.mBoardCamera);
     
-    for(var i = 0; i < this.meats.length; i++) {
-        this.meats[i].draw(this.mBoardCamera);
+    for(var i = 0; i < this.meatPile.length; i++) {
+        this.meatPile[i].draw(this.mBoardCamera);
     }
     
     for(var i = 0; i < this.enemies.length; i++) {
@@ -127,6 +128,10 @@ MyGame.prototype.draw = function() {
     
     for(var i = 0; i < this.projectiles.length; i++) {
         this.projectiles[i].draw(this.mBoardCamera);
+    }
+    
+    for(var i = 0; i < this.looseMeats.length; i++) {
+        this.looseMeats[i].draw(this.mBoardCamera);
     }
     
     this.mPlayerCamera.setupViewProjection();
@@ -147,8 +152,15 @@ MyGame.prototype.update = function() {
         } else if(this.enemies[i].getStartTime() < this.mFrameCount) {
             this.enemies[i].update(this.board);
         }
-        if(this.enemies[i].getPreviousTile() === this.board.getLastTile()) {
+        if(this.enemies[i].getPreviousTile() === this.board.getLastTile() && this.enemies[i].getCarryingMeat() === null) {
             console.log('grab the meats!!');
+            for(var j = this.meatPile.length-1; j >= 0; j--) {
+                this.meatPile[j].setEnemy(this.enemies[i]);
+                this.enemies[i].setCarryingMeat(this.meatPile[j]);
+                this.looseMeats.push(this.meatPile[j]);
+                this.meatPile.splice(j, 1);
+                break;
+            }
         }
         if(this.enemies[i].hasLeftBoard(this.board)) {
             this.enemies.splice(i, 1);
@@ -214,6 +226,10 @@ MyGame.prototype.update = function() {
                 this.towers[i].setShotCountdown(60);
             }
         }
+    }
+    
+    for(var i = 0; i < this.looseMeats.length; i++) {
+        this.looseMeats[i].update();
     }
     
     this.healthText.setText(this.player.getHealth().toString());

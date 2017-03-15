@@ -23,6 +23,7 @@ function Enemy(startTime) {
     
     this.health = 15;
     this.direction = 'forwards';
+    this.carryingMeat = null;
 }
 gEngine.Core.inheritPrototype(Enemy, GameObject);
 
@@ -40,6 +41,12 @@ Enemy.prototype.getPreviousTile = function() {
 };
 Enemy.prototype.getNextTile = function() {
     return this.nextTile;
+};
+Enemy.prototype.getCarryingMeat = function() {
+    return this.carryingMeat;
+};
+Enemy.prototype.setCarryingMeat = function(meat) {
+    this.carryingMeat = meat;
 };
 
 Enemy.prototype.spawn = function(board) {
@@ -116,8 +123,7 @@ Enemy.prototype.calculateNextTile = function(board) {
             }
         }
     }
-    //If we get this far, the enemy is at the end of the board
-    console.log('grab the meat!');
+    //If we get this far, the enemy is at either the meat pile or the end of the board
     this.nextTile = this.previousTile;
     this.previousTile = board.getLastTile();
     this.direction = 'backwards';
