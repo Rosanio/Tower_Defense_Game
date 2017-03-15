@@ -111,6 +111,10 @@ MyGame.prototype.draw = function() {
     
     this.board.draw(this.mBoardCamera);
     
+    for(var i = 0; i < this.meats.length; i++) {
+        this.meats[i].draw(this.mBoardCamera);
+    }
+    
     for(var i = 0; i < this.enemies.length; i++) {
         if(this.enemies[i].getStartTime() < this.mFrameCount) {
             this.enemies[i].draw(this.mBoardCamera);
@@ -123,10 +127,6 @@ MyGame.prototype.draw = function() {
     
     for(var i = 0; i < this.projectiles.length; i++) {
         this.projectiles[i].draw(this.mBoardCamera);
-    }
-    
-    for(var i = 0; i < this.meats.length; i++) {
-        this.meats[i].draw(this.mBoardCamera);
     }
     
     this.mPlayerCamera.setupViewProjection();
@@ -147,6 +147,9 @@ MyGame.prototype.update = function() {
         } else if(this.enemies[i].getStartTime() < this.mFrameCount) {
             this.enemies[i].update(this.board);
         }
+        if(this.enemies[i].getPreviousTile() === this.board.getLastTile()) {
+            console.log('grab the meats!!');
+        }
         if(this.enemies[i].hasLeftBoard(this.board)) {
             this.enemies.splice(i, 1);
             this.player.incHealthBy(-5);
@@ -155,7 +158,6 @@ MyGame.prototype.update = function() {
                 gEngine.GameLoop.stop();
             }
         }
-        
     }
     for(var i = 0; i < this.projectiles.length; i++) {
         this.projectiles[i].update();

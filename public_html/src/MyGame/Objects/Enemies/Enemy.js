@@ -5,7 +5,6 @@
  */
 
 function Enemy(startTime) {
-    
     this.previousTile = null;
     this.nextTile = null;
     this.startTime = startTime;
@@ -13,7 +12,7 @@ function Enemy(startTime) {
     this.mEnemy = new Renderable();
     this.mEnemy.setColor([1, 0, 0, 1]);
     this.mEnemy.getXform().setSize(40, 40);
-    this.currentTile = null;
+    
     GameObject.call(this, this.mEnemy);
     
     var r = new RigidRectangle(this.mEnemy.getXform(), 20, 20);
@@ -23,6 +22,7 @@ function Enemy(startTime) {
     this.setPhysicsComponent(r);
     
     this.health = 15;
+    this.direction = 'forwards';
 }
 gEngine.Core.inheritPrototype(Enemy, GameObject);
 
@@ -34,6 +34,12 @@ Enemy.prototype.incHealthBy = function(delta) {
 };
 Enemy.prototype.getStartTime = function() {
     return this.startTime;
+};
+Enemy.prototype.getPreviousTile = function() {
+    return this.previousTile;
+};
+Enemy.prototype.getNextTile = function() {
+    return this.nextTile;
 };
 
 Enemy.prototype.spawn = function(board) {
@@ -64,7 +70,7 @@ Enemy.prototype.spawn = function(board) {
     var xDir = this.nextTile.getPosition()[0] - spawnCoords[spawnSpaceIndex][0];
     var yDir = this.nextTile.getPosition()[1] - spawnCoords[spawnSpaceIndex][1];
     this.setCurrentFrontDir([xDir, yDir]);
-    this.setSpeed(0.75);
+    this.setSpeed(1.75);
 };
 
 Enemy.prototype.update = function(board) {
@@ -101,14 +107,20 @@ Enemy.prototype.calculateNextTile = function(board) {
                 if(adjacentTiles[i].getPosition() !== this.previousTile.getPosition()) {
                     this.previousTile = this.nextTile;
                     this.nextTile = adjacentTiles[i];
-                    break;
+                    return;
                 }
             } else {
                 this.previousTile = this.nextTile;
                 this.nextTile = adjacentTiles[i];
+                return;
             }
         }
     }
+    //If we get this far, the enemy is at the end of the board
+    console.log('grab the meat!');
+    this.nextTile = this.previousTile;
+    this.previousTile = board.getLastTile();
+    this.direction = 'backwards';
 };
 Enemy.prototype.setDirectionBasedOnTiles = function() {
     var xDir = this.nextTile.getPosition()[0] - this.previousTile.getPosition()[0];
@@ -121,7 +133,7 @@ Enemy.prototype.hasLeftBoard = function(board) {
     var position = this.getXform().getPosition();
     var enemyLeftCoords = vec2.subtract([], position, vec2.scale([], frontDirection, this.getXform().getSize()[0]));
     
-    if(this.nextTile === board.getLastTile()) {
+    if(this.nextTile === board.getStartTile() && this.direction === 'backwards') {
         if(!board.areCoordinatesOnBoard(enemyLeftCoords[0], enemyLeftCoords[1])) {
             return true;
         }
