@@ -6,7 +6,7 @@
 
 function Player() {
     this.health = 100;
-    this.gold = 0;
+    this.meat = 10;
 }
 
 Player.prototype.getHealth = function() {
@@ -18,9 +18,9 @@ Player.prototype.setHealth = function(h) {
 Player.prototype.incHealthBy = function(delta) {
     this.health += delta;
 };
-Player.prototype.getGold = function() {
-    return this.gold;
+Player.prototype.getMeat = function() {
+    return this.meat;
 };
-Player.prototype.incGoldBy = function(delta) {
-    this.gold += delta;
+Player.prototype.incMeatBy = function(delta) {
+    this.meat += delta;
 };

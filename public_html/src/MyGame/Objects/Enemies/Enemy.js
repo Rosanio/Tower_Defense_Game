@@ -64,7 +64,7 @@ Enemy.prototype.spawn = function(board) {
     var xDir = this.nextTile.getPosition()[0] - spawnCoords[spawnSpaceIndex][0];
     var yDir = this.nextTile.getPosition()[1] - spawnCoords[spawnSpaceIndex][1];
     this.setCurrentFrontDir([xDir, yDir]);
-    this.setSpeed(1.75);
+    this.setSpeed(0.75);
 };
 
 Enemy.prototype.update = function(board) {

@@ -24,9 +24,12 @@ function MyGame() {
     this.towers = [];
     this.enemies = [];
     this.projectiles = [];
+    this.meats = [];
     
     this.kHeartTexture = "assets/heart.png";
+    this.kMeatTexture = "assets/Meat.png";
     this.heartIcon = null;
+    this.meatIcon = null;
     this.healthText = null;
     
     this.nextScene = null;
@@ -37,12 +40,14 @@ MyGame.prototype.loadScene = function() {
     gEngine.TextFileLoader.loadTextFile(this.kBoardFile, gEngine.TextFileLoader.eTextFileType.eXMLFile);
     gEngine.TextFileLoader.loadTextFile(this.kWave1File, gEngine.TextFileLoader.eTextFileType.eXMLFile);
     gEngine.Textures.loadTexture(this.kHeartTexture);
+    gEngine.Textures.loadTexture(this.kMeatTexture);
 };
 
 MyGame.prototype.unloadScene = function() {
     gEngine.TextFileLoader.unloadTextFile(this.kBoardFile);
     gEngine.TextFileLoader.unloadTextFile(this.kWave1File);
     gEngine.Textures.unloadTexture(this.kHeartTexture);
+    gEngine.Textures.unloadTexture(this.kMeatTexture);
     gEngine.Core.startScene(this.nextScene);
 };
 
@@ -75,12 +80,27 @@ MyGame.prototype.initialize = function() {
     this.heartIcon.getXform().setPosition(-100, 330);
     this.heartIcon.getXform().setSize(40, 40);
     this.heartIcon.setColor([1, 1, 1, 0]);
+    this.meatIcon = new TextureRenderable(this.kMeatTexture);
+    this.meatIcon.getXform().setPosition(-96, 290);
+    this.meatIcon.getXform().setSize(40, 40);
+    this.meatIcon.setColor([1, 1, 1, 0]);
     
     var health = this.player.getHealth().toString();
     this.healthText = new FontRenderable(health);
     this.healthText.setColor([1, 1, 1, 0]);
-    this.healthText.getXform().setPosition(-70, 330);
+    this.healthText.getXform().setPosition(-70, 333);
     this.healthText.setTextHeight(20);
+    var meat = this.player.getMeat().toString();
+    this.meatText = new FontRenderable(meat);
+    this.meatText.setColor([1, 1, 1, 0]);
+    this.meatText.getXform().setPosition(-70, 293);
+    this.meatText.setTextHeight(20);
+    
+    for(var i = 0; i < this.player.getMeat(); i++) {
+        var meat = new Meat(this.kMeatTexture);
+        meat.initialize(this.board.getLastTile());
+        this.meats.push(meat);
+    }
 };
 
 //This is the draw function, make sure to setup proper drawing environment, and more importantly, make sure to NOT change any state
@@ -105,9 +125,15 @@ MyGame.prototype.draw = function() {
         this.projectiles[i].draw(this.mBoardCamera);
     }
     
+    for(var i = 0; i < this.meats.length; i++) {
+        this.meats[i].draw(this.mBoardCamera);
+    }
+    
     this.mPlayerCamera.setupViewProjection();
     this.heartIcon.draw(this.mPlayerCamera);
+    this.meatIcon.draw(this.mPlayerCamera);
     this.healthText.draw(this.mPlayerCamera);
+    this.meatText.draw(this.mPlayerCamera);
 };
 
 //The update function, updates the application state. Make sure to NOT draw anything in this function!
@@ -137,30 +163,29 @@ MyGame.prototype.update = function() {
         //Delete any projectiles which are no longer on the board
         if(!this.board.areCoordinatesOnBoard(this.projectiles[i].getXform().getPosition()[0], this.projectiles[i].getXform().getPosition()[1])) {
             this.projectiles.splice(i, 1);
-        }
-        
-        if(target) {
-            //Check for target collision if particle has a target
-            if(this.projectiles[i].getPhysicsComponent().collided(target.getPhysicsComponent())) {
-                this.projectiles[i].onHit();
-                this.projectiles.splice(i, 1);
-                if(target.getHealth() <= 0) {
-                    //Delete enemy if health is 0 or less
-                    for(var j = 0; j < this.enemies.length; j++) {
-                        if(this.enemies[j] === target) {
-                            this.enemies.splice(j, 1);
+        } else {
+            if(target) {
+                //Check for target collision if particle has a target
+                if(this.projectiles[i].getPhysicsComponent().collided(target.getPhysicsComponent())) {
+                    this.projectiles[i].onHit();
+                    this.projectiles.splice(i, 1);
+                    if(target.getHealth() <= 0) {
+                        //Delete enemy if health is 0 or less
+                        for(var j = 0; j < this.enemies.length; j++) {
+                            if(this.enemies[j] === target) {
+                                this.enemies.splice(j, 1);
+                            }
                         }
-                    }
-                    //Reset target for all other projectiles so they keep on going
-                    for(var j = 0; j < this.projectiles.length; j++) {
-                        if(this.projectiles[j].getTarget() === target) {
-                            this.projectiles[j].setTarget(null);
+                        //Reset target for all other projectiles so they keep on going
+                        for(var j = 0; j < this.projectiles.length; j++) {
+                            if(this.projectiles[j].getTarget() === target) {
+                                this.projectiles[j].setTarget(null);
+                            }
                         }
                     }
                 }
             }
         }
-        
     }
     if(gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left)) {
         console.log(this.mBoardCamera.mouseWCX() + " " + this.mBoardCamera.mouseWCY());
