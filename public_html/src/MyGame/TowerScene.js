@@ -77,24 +77,14 @@ MyGame.prototype.initialize = function() {
     //Parse wave 1
     this.enemies = waveFileParser.parseWave();
     
-    this.heartIcon = new TextureRenderable(this.kHeartTexture);
-    this.heartIcon.getXform().setPosition(-100, 330);
-    this.heartIcon.getXform().setSize(40, 40);
-    this.heartIcon.setColor([1, 1, 1, 0]);
     this.meatIcon = new TextureRenderable(this.kMeatTexture);
-    this.meatIcon.getXform().setPosition(-96, 290);
+    this.meatIcon.getXform().setPosition(-96, 310);
     this.meatIcon.getXform().setSize(40, 40);
     this.meatIcon.setColor([1, 1, 1, 0]);
-    
-    var health = this.player.getHealth().toString();
-    this.healthText = new FontRenderable(health);
-    this.healthText.setColor([1, 1, 1, 0]);
-    this.healthText.getXform().setPosition(-70, 333);
-    this.healthText.setTextHeight(20);
     var meat = this.player.getMeat().toString();
     this.meatText = new FontRenderable(meat);
     this.meatText.setColor([1, 1, 1, 0]);
-    this.meatText.getXform().setPosition(-70, 293);
+    this.meatText.getXform().setPosition(-70, 313);
     this.meatText.setTextHeight(20);
     
     for(var i = 0; i < this.player.getMeat(); i++) {
@@ -135,9 +125,7 @@ MyGame.prototype.draw = function() {
     }
     
     this.mPlayerCamera.setupViewProjection();
-    this.heartIcon.draw(this.mPlayerCamera);
     this.meatIcon.draw(this.mPlayerCamera);
-    this.healthText.draw(this.mPlayerCamera);
     this.meatText.draw(this.mPlayerCamera);
 };
 
@@ -163,9 +151,11 @@ MyGame.prototype.update = function() {
             }
         }
         if(this.enemies[i].hasLeftBoard(this.board)) {
+            if(this.enemies[i].getCarryingMeat()) {
+                this.player.incMeatBy(-1);
+            }
             this.enemies.splice(i, 1);
-            this.player.incHealthBy(-5);
-            if(this.player.getHealth() <= 0) {
+            if(this.player.getMeat() <= 0) {
                 this.nextScene = new GameOver();
                 gEngine.GameLoop.stop();
             }
@@ -232,7 +222,7 @@ MyGame.prototype.update = function() {
         this.looseMeats[i].update();
     }
     
-    this.healthText.setText(this.player.getHealth().toString());
+    this.meatText.setText(this.player.getMeat().toString());
     
     //Lastly, update frame count
     this.mFrameCount++;
