@@ -18,6 +18,8 @@ function MyGame() {
     this.kBoardFile = "assets/boardScenes/Board1.xml";
     this.kWave1File = "assets/enemyWaveXML/Lv1Wave1.xml";
     
+    this.kJerseyTexture = "assets/Jersey.png";
+    
     //Game Objects
     this.player = null;
     this.board = null;
@@ -27,6 +29,7 @@ function MyGame() {
     this.meatPile = [];
     this.looseMeats = [];
     
+    this.mDogTiles = [];
     this.kHeartTexture = "assets/heart.png";
     this.kMeatTexture = "assets/Meat.png";
     this.heartIcon = null;
@@ -42,6 +45,7 @@ MyGame.prototype.loadScene = function() {
     gEngine.TextFileLoader.loadTextFile(this.kWave1File, gEngine.TextFileLoader.eTextFileType.eXMLFile);
     gEngine.Textures.loadTexture(this.kHeartTexture);
     gEngine.Textures.loadTexture(this.kMeatTexture);
+    gEngine.Textures.loadTexture(this.kJerseyTexture);
 };
 
 MyGame.prototype.unloadScene = function() {
@@ -49,6 +53,7 @@ MyGame.prototype.unloadScene = function() {
     gEngine.TextFileLoader.unloadTextFile(this.kWave1File);
     gEngine.Textures.unloadTexture(this.kHeartTexture);
     gEngine.Textures.unloadTexture(this.kMeatTexture);
+    gEngine.Textures.unloadTexture(this.kJerseyTexture);
     gEngine.Core.startScene(this.nextScene);
 };
 
@@ -92,6 +97,10 @@ MyGame.prototype.initialize = function() {
         meat.initialize(this.board.getLastTile());
         this.meatPile.push(meat);
     }
+    
+    for(var i = 0; i < 3; i++) {
+        this.mDogTiles.push(new DogTile(0, (240 - 100*i)));
+    }
 };
 
 //This is the draw function, make sure to setup proper drawing environment, and more importantly, make sure to NOT change any state
@@ -127,6 +136,10 @@ MyGame.prototype.draw = function() {
     this.mPlayerCamera.setupViewProjection();
     this.meatIcon.draw(this.mPlayerCamera);
     this.meatText.draw(this.mPlayerCamera);
+    
+    for(var i = 0; i < this.mDogTiles.length; i++) {
+        this.mDogTiles[i].draw(this.mPlayerCamera);
+    }
 };
 
 //The update function, updates the application state. Make sure to NOT draw anything in this function!

@@ -21,7 +21,7 @@ function Tower() {
     
     this.mDamage = 1;
 }
-gEngine.Core.inheritPrototype(Tower, GameObject);
+gEngine.Core.inheritPrototype(Tower, Dog);
 
 Tower.prototype.initialize = function(tile) {
     var x = tile.getPosition()[0];
