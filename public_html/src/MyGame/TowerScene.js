@@ -24,12 +24,16 @@ function MyGame() {
     this.player = null;
     this.board = null;
     this.towers = [];
+    this.dogs = [];
     this.enemies = [];
     this.projectiles = [];
     this.meatPile = [];
     this.looseMeats = [];
-    
     this.mDogTiles = [];
+    
+    this.dropDog = null;
+    this.selectedDog = null;
+    
     this.kHeartTexture = "assets/heart.png";
     this.kMeatTexture = "assets/Meat.png";
     this.heartIcon = null;
@@ -99,7 +103,7 @@ MyGame.prototype.initialize = function() {
     }
     
     for(var i = 0; i < 3; i++) {
-        this.mDogTiles.push(new DogTile(0, (240 - 100*i)));
+        this.mDogTiles.push(new DogTile(0, (240 - 100*i), this.kJerseyTexture));
     }
 };
 
@@ -121,8 +125,8 @@ MyGame.prototype.draw = function() {
         }
     }
     
-    for(var i = 0; i < this.towers.length; i++) {
-        this.towers[i].draw(this.mBoardCamera);
+    for(var i = 0; i < this.dogs.length; i++) {
+        this.dogs[i].draw(this.mBoardCamera);
     }
     
     for(var i = 0; i < this.projectiles.length; i++) {
@@ -131,6 +135,10 @@ MyGame.prototype.draw = function() {
     
     for(var i = 0; i < this.looseMeats.length; i++) {
         this.looseMeats[i].draw(this.mBoardCamera);
+    }
+    
+    if(this.dropDog) {
+        this.dropDog.draw(this.mBoardCamera);
     }
     
     this.mPlayerCamera.setupViewProjection();
@@ -174,7 +182,7 @@ MyGame.prototype.update = function() {
             }
         }
     }
-    for(var i = 0; i < this.projectiles.length; i++) {
+    /*for(var i = 0; i < this.projectiles.length; i++) {
         this.projectiles[i].update();
         var target = this.projectiles[i].getTarget();
         //Delete any projectiles which are no longer on the board
@@ -203,32 +211,48 @@ MyGame.prototype.update = function() {
                 }
             }
         }
+    }*/
+    
+    if(this.dropDog) {
+        this.dropDog.getXform().setPosition(this.mBoardCamera.mouseWCX(), this.mBoardCamera.mouseWCY());
     }
+    
+    if(this.selectedDog) {
+        console.log(this.selectedDog);
+    }
+    
     if(gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left)) {
-        console.log(this.mBoardCamera.mouseWCX() + " " + this.mBoardCamera.mouseWCY());
+        if(this.mPlayerCamera.isMouseInViewport()) {
+            //Find out what dog tile was clicked on
+            var mouseClickCoords = [this.mPlayerCamera.mouseWCX(), this.mPlayerCamera.mouseWCY()];
+            for(var i = 0; i < this.mDogTiles.length; i++) {
+                if(this.mDogTiles[i].areCoordsOnTile(mouseClickCoords)) {
+                    //Spawn a new instance of that dog
+                    this.dropDog = this.mDogTiles[i].getDog();
+                }
+            }
+        } else if(this.mBoardCamera.isMouseInViewport()) {
+            var mouseClickX = this.mBoardCamera.mouseWCX();
+            var mouseClickY = this.mBoardCamera.mouseWCY();
+            if(this.dropDog) {
+                this.dropDog.getRenderable().setColorArray();
+                this.dogs.push(this.dropDog);
+                this.dropDog = null;
+            } else {
+                for(var i = 0; i < this.dogs.length; i++) {
+                    if(this.dogs[i].getBbox().containsPoint(mouseClickX, mouseClickY)) {
+                        var indexCoords = [];
+                        this.dogs[i].getRenderable()._wcPositionToIndex(indexCoords, [mouseClickX, mouseClickY], [1, 0], [0, 1]);
+                        console.log(this.dogs[i].getRenderable()._pixelAlphaValue(indexCoords[0], indexCoords[1]));
+                        if(this.dogs[i].getRenderable()._pixelAlphaValue(indexCoords[0], indexCoords[1]) > 0) {
+                            this.selectedDog = this.dogs[i];
+                            break;
+                        } 
+                    }
+                }
+            }
+        }
         
-    }
-    if(gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Right)) {
-        var tile = this.board.getTileFromCoords(this.mBoardCamera.mouseWCX(), this.mBoardCamera.mouseWCY());
-        if(tile instanceof GrassTile) {
-            if(tile.getTower() === null) {
-                var tower = new Tower();
-                tower.initialize(tile);
-                this.towers.push(tower);
-                tile.setTower(tower);
-            }
-        }
-    }
-    for(var i = 0; i < this.towers.length; i++) {
-        this.towers[i].update();
-        for(var j = 0; j < this.enemies.length; j++) {
-            if(this.towers[i].getPhysicsComponent().collided(this.enemies[j].getPhysicsComponent()) && this.towers[i].getShotCountdown() === 0) {
-                var proj = new Projectile();
-                proj.initialize(this.towers[i], this.enemies[j]);
-                this.projectiles.push(proj);
-                this.towers[i].setShotCountdown(60);
-            }
-        }
     }
     
     for(var i = 0; i < this.looseMeats.length; i++) {

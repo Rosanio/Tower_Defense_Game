@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-function Jersey(texture) {
-    ControlledDog.call(this, texture);
+function Jersey() {
+    ControlledDog.call(this, "assets/Jersey.png", "Jersey");
 }
 gEngine.Core.inheritPrototype(Jersey, ControlledDog);

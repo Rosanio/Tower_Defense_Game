@@ -4,12 +4,12 @@
  * and open the template in the editor.
  */
 
-function ControlledDog(texture) {
+function ControlledDog(texture, name) {
     this.mDogRenderable = new TextureRenderable(texture);
     this.mDogRenderable.getXform().setSize(85, 85);
     this.mDogRenderable.setColor([1, 1, 1, 0]);
     
-    GameObject.call(this, this.mDogRenderable);
+    Dog.call(this, this.mDogRenderable, name);
 }
 gEngine.Core.inheritPrototype(ControlledDog, Dog);
 

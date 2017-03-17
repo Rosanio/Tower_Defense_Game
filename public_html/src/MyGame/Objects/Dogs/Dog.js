@@ -4,7 +4,16 @@
  * and open the template in the editor.
  */
 
-function Dog() {
-    
+function Dog(renderable, name) {
+    this.mDog = renderable;
+    this.mName = name;
+    GameObject.call(this, renderable);
 }
 gEngine.Core.inheritPrototype(Dog, GameObject);
+
+Dog.prototype.getName = function() {
+    return this.mName;
+};
+Dog.prototype.setName = function(n) {
+    this.mName = n;
+};
