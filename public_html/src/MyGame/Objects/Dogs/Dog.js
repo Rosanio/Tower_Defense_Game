@@ -4,9 +4,12 @@
  * and open the template in the editor.
  */
 
-function Dog(renderable, name) {
+function Dog(renderable, name, damage, attackRate) {
     this.mDog = renderable;
     this.mName = name;
+    this.mDamage = damage;
+    this.mAttackRate = attackRate;
+    this.mLastAttackTime = 0;
     GameObject.call(this, renderable);
 }
 gEngine.Core.inheritPrototype(Dog, GameObject);
@@ -18,11 +21,11 @@ Dog.prototype.setName = function(n) {
     this.mName = n;
 };
 
-Dog.prototype.initialize = function() {
-    this.setCurrentFrontDir([0, 0]);
-    console.log(this.getCurrentFrontDir());
-};
-
 Dog.prototype.update = function() {
     GameObject.prototype.update.call(this);
+};
+
+Dog.prototype.attack = function(enemy) {
+    enemy.incHealthBy(-this.mDamage);
+    this.mLastAttackTime = GameClock.getFrameCount();
 };

@@ -145,3 +145,10 @@ Enemy.prototype.hasLeftBoard = function(board) {
         }
     }
 };
+
+Enemy.prototype.hasBeenClicked = function(mouseX, mouseY) {
+    var pos = this.getXform().getPosition();
+    var xBounds = [(pos[0] - this.getXform().getWidth()/2), (pos[0] + this.getXform().getWidth()/2)];
+    var yBounds = [(pos[1] - this.getXform().getHeight()/2), (pos[1] + this.getXform().getHeight()/2)];
+    return ((mouseX > xBounds[0] && mouseX < xBounds[1]) && (mouseY > yBounds[0] && mouseY < yBounds[1]));
+};

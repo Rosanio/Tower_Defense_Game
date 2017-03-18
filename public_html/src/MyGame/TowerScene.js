@@ -9,9 +9,6 @@ function MyGame() {
     //Camera for Player UI
     this.mPlayerCamera = null;
     
-    //Frame count to measure time
-    this.mFrameCount = 0;
-    
     this.kBoardWidth = 8;
     this.kBoardHeight = 8;
     
@@ -120,7 +117,7 @@ MyGame.prototype.draw = function() {
     }
     
     for(var i = 0; i < this.enemies.length; i++) {
-        if(this.enemies[i].getStartTime() < this.mFrameCount) {
+        if(this.enemies[i].getStartTime() < GameClock.getFrameCount()) {
             this.enemies[i].draw(this.mBoardCamera);
         }
     }
@@ -156,9 +153,13 @@ MyGame.prototype.update = function() {
     this.mPlayerCamera.update();
     
     for(var i = 0; i < this.enemies.length; i++) {
-        if(this.enemies[i].getStartTime() === this.mFrameCount) {
+        if(this.enemies[i].getHealth() <= 0) {
+            this.enemies.splice(i, 1);
+            continue;
+        }
+        if(this.enemies[i].getStartTime() === GameClock.getFrameCount()) {
             this.enemies[i].spawn(this.board);
-        } else if(this.enemies[i].getStartTime() < this.mFrameCount) {
+        } else if(this.enemies[i].getStartTime() < GameClock.getFrameCount()) {
             this.enemies[i].update(this.board);
         }
         if(this.enemies[i].getPreviousTile() === this.board.getLastTile() && this.enemies[i].getCarryingMeat() === null) {
@@ -223,6 +224,13 @@ MyGame.prototype.update = function() {
     
     if(this.selectedDog) {
         if(gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Right)) {
+            this.selectedDog.setTarget(null);
+            for(var i = 0; i < this.enemies.length; i++) {
+                if(this.enemies[i].hasBeenClicked(this.mBoardCamera.mouseWCX(), this.mBoardCamera.mouseWCY())) {
+                    this.selectedDog.setTarget(this.enemies[i]);
+                    break;
+                }
+            }
             this.selectedDog.setDestination([this.mBoardCamera.mouseWCX(), this.mBoardCamera.mouseWCY()]);
             var frontDir = [(this.mBoardCamera.mouseWCX() - this.selectedDog.getXform().getXPos()), (this.mBoardCamera.mouseWCY() - this.selectedDog.getXform().getYPos())];
             this.selectedDog.setCurrentFrontDir(frontDir);
@@ -270,5 +278,5 @@ MyGame.prototype.update = function() {
     this.meatText.setText(this.player.getMeat().toString());
     
     //Lastly, update frame count
-    this.mFrameCount++;
+    GameClock.incFrameCount();
 };

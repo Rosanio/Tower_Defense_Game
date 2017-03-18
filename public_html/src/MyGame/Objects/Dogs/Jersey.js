@@ -5,8 +5,8 @@
  */
 
 function Jersey() {
-    ControlledDog.call(this, "assets/Jersey.png", "Jersey");
-    this.setSpeed(1.5);
+    ControlledDog.call(this, "assets/Jersey.png", "Jersey", 5, 45);
+    this.setSpeed(3.5);
     var r = new RigidCircle(this.getXform(), 21);
     r.setColor([0, 0, 1, 1]);
     r.setDrawBounds(true);
@@ -16,5 +16,7 @@ function Jersey() {
 gEngine.Core.inheritPrototype(Jersey, ControlledDog);
 
 Jersey.prototype.update = function() {
-    ControlledDog.prototype.update.call(this);
+    if((this.mLastAttackTime + this.mAttackRate) < GameClock.getFrameCount()) {
+        ControlledDog.prototype.update.call(this);
+    }
 };

@@ -12,7 +12,6 @@ function DogTile(x, y, texture) {
     GameObject.call(this, this.mDogTile);
     
     this.mDog = new Jersey();
-    this.mDog.initialize();
     
     this.mDogPicture = new TextureRenderable(texture);
     this.mDogPicture.getXform().setPosition(this.mDogTile.getXform().getXPos()-90, this.mDogTile.getXform().getYPos());
