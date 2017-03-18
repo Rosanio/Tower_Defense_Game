@@ -125,10 +125,6 @@ MyGame.prototype.draw = function() {
         }
     }
     
-    for(var i = 0; i < this.dogs.length; i++) {
-        this.dogs[i].draw(this.mBoardCamera);
-    }
-    
     for(var i = 0; i < this.projectiles.length; i++) {
         this.projectiles[i].draw(this.mBoardCamera);
     }
@@ -139,6 +135,10 @@ MyGame.prototype.draw = function() {
     
     if(this.dropDog) {
         this.dropDog.draw(this.mBoardCamera);
+    }
+    
+    for(var i = 0; i < this.dogs.length; i++) {
+        this.dogs[i].draw(this.mBoardCamera);
     }
     
     this.mPlayerCamera.setupViewProjection();
@@ -213,12 +213,20 @@ MyGame.prototype.update = function() {
         }
     }*/
     
+    for(var i = 0; i < this.dogs.length; i++) {
+        this.dogs[i].update();
+    }
+    
     if(this.dropDog) {
         this.dropDog.getXform().setPosition(this.mBoardCamera.mouseWCX(), this.mBoardCamera.mouseWCY());
     }
     
     if(this.selectedDog) {
-        console.log(this.selectedDog);
+        if(gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Right)) {
+            this.selectedDog.setDestination([this.mBoardCamera.mouseWCX(), this.mBoardCamera.mouseWCY()]);
+            var frontDir = [(this.mBoardCamera.mouseWCX() - this.selectedDog.getXform().getXPos()), (this.mBoardCamera.mouseWCY() - this.selectedDog.getXform().getYPos())];
+            this.selectedDog.setCurrentFrontDir(frontDir);
+        }
     }
     
     if(gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Left)) {

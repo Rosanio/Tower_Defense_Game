@@ -9,10 +9,33 @@ function ControlledDog(texture, name) {
     this.mDogRenderable.getXform().setSize(85, 85);
     this.mDogRenderable.setColor([1, 1, 1, 0]);
     
+    this.mDestination = null;
+    
     Dog.call(this, this.mDogRenderable, name);
 }
 gEngine.Core.inheritPrototype(ControlledDog, Dog);
 
 ControlledDog.prototype.getRenderable = function() {
     return this.mDogRenderable;
+};
+ControlledDog.prototype.getSpeed = function() {
+    return this.mSpeed;
+};
+ControlledDog.prototype.setSpeed = function(s) {
+    this.mSpeed = s;
+};
+ControlledDog.prototype.getDestination = function() {
+    return this.mDestination;
+};
+ControlledDog.prototype.setDestination = function(des) {
+    this.mDestination = des;
+};
+
+ControlledDog.prototype.update = function() {
+    if(this.mDestination) {
+        Dog.prototype.update.call(this);
+        if(this.getPhysicsComponent().containsPos(this.mDestination)) {
+            this.mDestination = null;
+        }
+    }
 };

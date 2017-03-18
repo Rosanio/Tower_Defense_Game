@@ -17,3 +17,12 @@ Dog.prototype.getName = function() {
 Dog.prototype.setName = function(n) {
     this.mName = n;
 };
+
+Dog.prototype.initialize = function() {
+    this.setCurrentFrontDir([0, 0]);
+    console.log(this.getCurrentFrontDir());
+};
+
+Dog.prototype.update = function() {
+    GameObject.prototype.update.call(this);
+};
