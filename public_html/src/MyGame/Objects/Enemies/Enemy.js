@@ -24,6 +24,8 @@ function Enemy(startTime) {
     this.health = 15;
     this.direction = 'forwards';
     this.carryingMeat = null;
+    this.bittenTime = 0;
+    this.bittenCountdown = 0;
 }
 gEngine.Core.inheritPrototype(Enemy, GameObject);
 
@@ -47,6 +49,18 @@ Enemy.prototype.getCarryingMeat = function() {
 };
 Enemy.prototype.setCarryingMeat = function(meat) {
     this.carryingMeat = meat;
+};
+Enemy.prototype.getBittenTime = function() {
+    return this.bittenTime;
+};
+Enemy.prototype.setBittenTime = function(t) {
+    this.bittenTime = t;
+};
+Enemy.prototype.getBittenCountdown = function() {
+    return this.bittenCountdown;
+};
+Enemy.prototype.setBittenCountdown = function(t) {
+    this.bittenCountdown = t;
 };
 
 Enemy.prototype.spawn = function(board) {
@@ -77,33 +91,35 @@ Enemy.prototype.spawn = function(board) {
     var xDir = this.nextTile.getPosition()[0] - spawnCoords[spawnSpaceIndex][0];
     var yDir = this.nextTile.getPosition()[1] - spawnCoords[spawnSpaceIndex][1];
     this.setCurrentFrontDir([xDir, yDir]);
-    this.setSpeed(1.75);
+    this.setSpeed(1.25);
 };
 
 Enemy.prototype.update = function(board) {
     //See if nextTile calculation is needed
-    var frontDirection = this.getCurrentFrontDir();
-    var position = this.getXform().getPosition();
-    var nextTilePosition = this.nextTile.getPosition();
-    
-    var dirIndex = -1;
-    if(Math.abs(frontDirection[0]) > Math.abs(frontDirection[1])) {
-        dirIndex = 0;
-    } else {
-        dirIndex = 1;
-    }
-    if(frontDirection[dirIndex] > 0) {
-        if(position[dirIndex] > nextTilePosition[dirIndex]) {
-            this.calculateNextTile(board);
-            this.setDirectionBasedOnTiles(); 
+    if((this.bittenTime + this.bittenCountdown) < GameClock.getFrameCount()) {
+        var frontDirection = this.getCurrentFrontDir();
+        var position = this.getXform().getPosition();
+        var nextTilePosition = this.nextTile.getPosition();
+
+        var dirIndex = -1;
+        if(Math.abs(frontDirection[0]) > Math.abs(frontDirection[1])) {
+            dirIndex = 0;
+        } else {
+            dirIndex = 1;
         }
-    } else {
-        if(position[dirIndex] < nextTilePosition[dirIndex]) {
-            this.calculateNextTile(board);
-            this.setDirectionBasedOnTiles();
+        if(frontDirection[dirIndex] > 0) {
+            if(position[dirIndex] > nextTilePosition[dirIndex]) {
+                this.calculateNextTile(board);
+                this.setDirectionBasedOnTiles(); 
+            }
+        } else {
+            if(position[dirIndex] < nextTilePosition[dirIndex]) {
+                this.calculateNextTile(board);
+                this.setDirectionBasedOnTiles();
+            }
         }
+        GameObject.prototype.update.call(this);
     }
-    GameObject.prototype.update.call(this);
 };
 
 Enemy.prototype.calculateNextTile = function(board) {
@@ -151,4 +167,9 @@ Enemy.prototype.hasBeenClicked = function(mouseX, mouseY) {
     var xBounds = [(pos[0] - this.getXform().getWidth()/2), (pos[0] + this.getXform().getWidth()/2)];
     var yBounds = [(pos[1] - this.getXform().getHeight()/2), (pos[1] + this.getXform().getHeight()/2)];
     return ((mouseX > xBounds[0] && mouseX < xBounds[1]) && (mouseY > yBounds[0] && mouseY < yBounds[1]));
+};
+
+Enemy.prototype.getBit = function(dog) {
+    this.bittenTime = GameClock.getFrameCount();
+    this.bittenCountdown = dog.getKnockbackTime();
 };

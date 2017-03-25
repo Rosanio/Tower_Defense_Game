@@ -2,6 +2,8 @@
  * Notes: All objects are drawn with the coordinates given set as center
  */
 
+/* global GameClock, gEngine, Scene */
+
 'use strict';
 function MyGame() {
     //The camera to view the board
@@ -163,7 +165,6 @@ MyGame.prototype.update = function() {
             this.enemies[i].update(this.board);
         }
         if(this.enemies[i].getPreviousTile() === this.board.getLastTile() && this.enemies[i].getCarryingMeat() === null) {
-            console.log('grab the meats!!');
             for(var j = this.meatPile.length-1; j >= 0; j--) {
                 this.meatPile[j].setEnemy(this.enemies[i]);
                 this.enemies[i].setCarryingMeat(this.meatPile[j]);
@@ -225,15 +226,18 @@ MyGame.prototype.update = function() {
     if(this.selectedDog) {
         if(gEngine.Input.isButtonClicked(gEngine.Input.mouseButton.Right)) {
             this.selectedDog.setTarget(null);
-            for(var i = 0; i < this.enemies.length; i++) {
-                if(this.enemies[i].hasBeenClicked(this.mBoardCamera.mouseWCX(), this.mBoardCamera.mouseWCY())) {
-                    this.selectedDog.setTarget(this.enemies[i]);
-                    break;
+            if(!this.selectedDog.isAttacking()) {
+                for(var i = 0; i < this.enemies.length; i++) {
+                    if(this.enemies[i].hasBeenClicked(this.mBoardCamera.mouseWCX(), this.mBoardCamera.mouseWCY())) {
+                        this.selectedDog.setTarget(this.enemies[i]);
+                        this.selectedDog.setTargetIsAlive(true);
+                        break;
+                    }
                 }
+                var frontDir = [(this.mBoardCamera.mouseWCX() - this.selectedDog.getXform().getXPos()), (this.mBoardCamera.mouseWCY() - this.selectedDog.getXform().getYPos())];
+                this.selectedDog.setCurrentFrontDir(frontDir);
             }
             this.selectedDog.setDestination([this.mBoardCamera.mouseWCX(), this.mBoardCamera.mouseWCY()]);
-            var frontDir = [(this.mBoardCamera.mouseWCX() - this.selectedDog.getXform().getXPos()), (this.mBoardCamera.mouseWCY() - this.selectedDog.getXform().getYPos())];
-            this.selectedDog.setCurrentFrontDir(frontDir);
         }
     }
     
@@ -253,6 +257,7 @@ MyGame.prototype.update = function() {
             if(this.dropDog) {
                 this.dropDog.getRenderable().setColorArray();
                 this.dogs.push(this.dropDog);
+                this.selectedDog = this.dropDog;
                 this.dropDog = null;
             } else {
                 for(var i = 0; i < this.dogs.length; i++) {

@@ -20,9 +20,14 @@ Dog.prototype.getName = function() {
 Dog.prototype.setName = function(n) {
     this.mName = n;
 };
+Dog.prototype.isAttacking = function() {
+    return ((this.mLastAttackTime + this.mAttackRate) > GameClock.getFrameCount());
+};
 
 Dog.prototype.update = function() {
-    GameObject.prototype.update.call(this);
+    if(this.mDestination) {
+        GameObject.prototype.update.call(this);
+    }
 };
 
 Dog.prototype.attack = function(enemy) {

@@ -37,21 +37,26 @@ ControlledDog.prototype.setTarget = function(tar) {
 ControlledDog.prototype.getTarget = function() {
     return this.mTarget;
 };
+ControlledDog.prototype.getBiteTime = function() {
+    return this.biteTime;
+};
+ControlledDog.prototype.setBiteTime = function(t) {
+    this.biteTime = t;
+};
 
 ControlledDog.prototype.update = function() {
-    if(this.mTarget) {
-        this.rotateObjPointTo(this.mTarget.getXform().getPosition(), 1);
-        this.mDestination = this.mTarget.getXform().getPosition();
-        if(this.mTarget.getPhysicsComponent().collided(this.getPhysicsComponent())) {
-            console.log('collision');
-            this.attack(this.mTarget);
-            this.mDestination = null;
-        }
-    }
-    if(this.mDestination) {
-        Dog.prototype.update.call(this);
-        if(this.getPhysicsComponent().containsPos(vec2.add([0, 0], this.mDestination, vec2.scale([0, 0], this.getCurrentFrontDir(), this.getPhysicsComponent().getRadius())))) {
-            this.mDestination = null;
-        }
-    }
+//    if(this.mTarget) {
+//        this.rotateObjPointTo(this.mTarget.getXform().getPosition(), 1);
+//        this.mDestination = this.mTarget.getXform().getPosition();
+//        if(this.mTarget.getPhysicsComponent().collided(this.getPhysicsComponent())) {
+//            this.attack(this.mTarget);
+//            this.mDestination = null;
+//        }
+//    }
+//    if(this.mDestination) {
+//        Dog.prototype.update.call(this);
+//        if(this.getPhysicsComponent().containsPos(vec2.add([0, 0], this.mDestination, vec2.scale([0, 0], this.getCurrentFrontDir(), this.getPhysicsComponent().getRadius())))) {
+//            this.mDestination = null;
+//        }
+//    }
 };

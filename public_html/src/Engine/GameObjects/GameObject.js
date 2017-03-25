@@ -31,7 +31,11 @@ GameObject.prototype.incSpeedBy = function(delta) {
     this.mSpeed += delta;
 };
 GameObject.prototype.setCurrentFrontDir = function(f) {
-    vec2.normalize(this.mCurrentFrontDir, f);
+    if(f[0] === 0 && f[1] === 0) {
+        this.mCurrentFrontDir = f;
+    } else {
+        vec2.normalize(this.mCurrentFrontDir, f);
+    }
 };
 GameObject.prototype.getCurrentFrontDir = function() {
     return this.mCurrentFrontDir;
